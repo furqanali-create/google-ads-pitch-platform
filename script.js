@@ -1,21 +1,46 @@
+// --- Firebase v9 Modular Imports ---
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+import { 
+    getAuth, 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword, 
+    signOut, 
+    onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+import { 
+    getFirestore, 
+    doc, 
+    setDoc, 
+    getDoc, 
+    addDoc, 
+    collection, 
+    query, 
+    orderBy, 
+    limit, 
+    getDocs, 
+    serverTimestamp 
+} from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+
+// --- Firebase Configuration ---
+// This is the configuration from your file.
+const firebaseConfig = {
+  apiKey: "AIzaSyBY6QzDwyF3oDvQTfwTTFGtVqB7QefOhi0",
+  authDomain: "ads-pitch-platform.firebaseapp.com",
+  projectId: "ads-pitch-platform",
+  storageBucket: "ads-pitch-platform.firebasestorage.app",
+  messagingSenderId: "1080086729632",
+  appId: "1:1080086729632:web:366a3033e22eb2d8754ac5",
+  measurementId: "G-3XZPMVNVSC"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
 document.addEventListener('DOMContentLoaded', function() {
     
-    // --- Firebase Configuration ---
-    // IMPORTANT: Replace this with your own Firebase project configuration!
-    const firebaseConfig = {
-      apiKey: "AIzaSyBY6QzDwyF3oDvQTfwTTFGtVqB7QefOhi0",
-      authDomain: "ads-pitch-platform.firebaseapp.com",
-      projectId: "ads-pitch-platform",
-      storageBucket: "ads-pitch-platform.firebasestorage.app",
-      messagingSenderId: "1080086729632",
-      appId: "1:1080086729632:web:366a3033e22eb2d8754ac5"
-    };
-
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-
     // --- Page Navigation & State Management ---
     const pages = document.querySelectorAll('.page');
     const appPages = document.querySelectorAll('.app-page');
@@ -49,7 +74,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // --- Authentication Logic ---
-    const loginPage = document.getElementById('loginPage');
     const loginButton = document.getElementById('loginButton');
     const signupButton = document.getElementById('signupButton');
     const emailInput = document.getElementById('email');
@@ -86,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleAuthMode();
     });
 
-    signupButton.addEventListener('click', () => {
+    signupButton.addEventListener('click', async () => {
         const email = emailInput.value;
         const password = passwordInput.value;
         const username = usernameInput.value;
@@ -95,48 +119,42 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        auth.createUserWithEmailAndPassword(email, password)
-            .then((userCredential) => {
-                // Set username in Firestore
-                return db.collection('users').doc(userCredential.user.uid).set({
-                    username: username,
-                    email: email
-                });
-            })
-            .then(() => {
-                 showPage('quizPage');
-            })
-            .catch((error) => {
-                authErrorEl.textContent = error.message;
-            });
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const userRef = doc(db, 'users', userCredential.user.uid);
+            await setDoc(userRef, { username: username, email: email });
+            showPage('quizPage');
+        } catch (error) {
+            authErrorEl.textContent = error.message;
+        }
     });
 
-    loginButton.addEventListener('click', () => {
+    loginButton.addEventListener('click', async () => {
         const email = emailInput.value;
         const password = passwordInput.value;
-        auth.signInWithEmailAndPassword(email, password)
-            .then((userCredential) => {
-                showPage('mainAppContainer');
-                showAppPage('toolPage');
-            })
-            .catch((error) => {
-                authErrorEl.textContent = error.message;
-            });
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            showPage('mainAppContainer');
+            showAppPage('toolPage');
+        } catch (error) {
+            authErrorEl.textContent = error.message;
+        }
     });
     
-    logoutButton.addEventListener('click', () => {
-        auth.signOut().then(() => {
-            showPage('loginPage');
-        });
+    logoutButton.addEventListener('click', async () => {
+        await signOut(auth);
+        showPage('loginPage');
     });
 
     // Check auth state on page load
-    auth.onAuthStateChanged(user => {
+    onAuthStateChanged(auth, async (user) => {
         if (user) {
             currentUser = user;
-            db.collection('users').doc(user.uid).get().then(doc => {
-                if(doc.exists) currentUsername = doc.data().username;
-            });
+            const userDocRef = doc(db, "users", user.uid);
+            const docSnap = await getDoc(userDocRef);
+            if (docSnap.exists()) {
+                currentUsername = docSnap.data().username;
+            }
             showPage('mainAppContainer');
             showAppPage('toolPage');
         } else {
@@ -149,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const submitQuizButton = document.getElementById('submitQuizButton');
     const quizErrorEl = document.getElementById('quiz-error');
     
-    submitQuizButton.addEventListener('click', () => {
+    submitQuizButton.addEventListener('click', async () => {
         const answers = {
             q1: document.querySelector('input[name="q1"]:checked')?.value,
             q2: document.querySelector('input[name="q2"]:checked')?.value,
@@ -158,20 +176,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const correctAnswers = { q1: 'c', q2: 'a', q3: 'b' };
         
         if (answers.q1 === correctAnswers.q1 && answers.q2 === correctAnswers.q2 && answers.q3 === correctAnswers.q3) {
-            // Save score to leaderboard
-            db.collection('leaderboard').doc(currentUser.uid).set({
-                name: currentUsername,
-                score: '3/3',
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            })
-            .then(() => {
+            try {
+                const leaderboardRef = doc(db, 'leaderboard', currentUser.uid);
+                await setDoc(leaderboardRef, {
+                    name: currentUsername,
+                    score: '3/3',
+                    timestamp: serverTimestamp()
+                });
                 showPage('mainAppContainer');
                 showAppPage('toolPage');
-            })
-            .catch(error => {
+            } catch (error) {
                 quizErrorEl.textContent = "Error saving score: " + error.message;
-            });
-
+            }
         } else {
             quizErrorEl.textContent = 'Incorrect answers. Please review and try again.';
         }
@@ -179,52 +195,51 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- Leaderboard Logic ---
     const leaderboardBody = document.getElementById('leaderboard-body');
-    function fetchLeaderboard() {
-        db.collection('leaderboard').orderBy('timestamp', 'desc').limit(10).get()
-            .then(querySnapshot => {
-                leaderboardBody.innerHTML = '';
-                let rank = 1;
-                querySnapshot.forEach(doc => {
-                    const data = doc.data();
-                    const date = data.timestamp ? data.timestamp.toDate().toLocaleDateString() : 'N/A';
-                    const row = `<tr>
-                        <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">${rank++}</td>
-                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${data.name}</td>
-                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${data.score}</td>
-                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${date}</td>
-                    </tr>`;
-                    leaderboardBody.innerHTML += row;
-                });
-            })
-            .catch(error => {
-                leaderboardBody.innerHTML = `<tr><td colspan="4" class="text-center py-4">Error loading leaderboard.</td></tr>`;
+    async function fetchLeaderboard() {
+        try {
+            const q = query(collection(db, "leaderboard"), orderBy("timestamp", "desc"), limit(10));
+            const querySnapshot = await getDocs(q);
+            leaderboardBody.innerHTML = '';
+            let rank = 1;
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const date = data.timestamp ? data.timestamp.toDate().toLocaleDateString() : 'N/A';
+                const row = `<tr>
+                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">${rank++}</td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${data.name}</td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${data.score}</td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${date}</td>
+                </tr>`;
+                leaderboardBody.innerHTML += row;
             });
+        } catch (error) {
+            leaderboardBody.innerHTML = `<tr><td colspan="4" class="text-center py-4">Error loading leaderboard.</td></tr>`;
+        }
     }
 
     // --- Suggestion Form Logic ---
     const suggestionForm = document.getElementById('suggestionForm');
     const suggestionText = document.getElementById('suggestionText');
     const suggestionSuccessEl = document.getElementById('suggestion-success');
-    suggestionForm.addEventListener('submit', (e) => {
+    suggestionForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const text = suggestionText.value;
         if (!text) return;
         
-        db.collection('suggestions').add({
-            suggestion: text,
-            user: currentUser.email,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        })
-        .then(() => {
+        try {
+            await addDoc(collection(db, 'suggestions'), {
+                suggestion: text,
+                user: currentUser.email,
+                timestamp: serverTimestamp()
+            });
             suggestionSuccessEl.textContent = 'Thank you for your suggestion!';
             suggestionForm.reset();
             setTimeout(() => suggestionSuccessEl.textContent = '', 3000);
-        })
-        .catch(error => {
+        } catch (error) {
             suggestionSuccessEl.textContent = 'Error: ' + error.message;
             suggestionSuccessEl.classList.remove('text-green-600');
             suggestionSuccessEl.classList.add('text-red-600');
-        });
+        }
     });
 
     // --- Tool Data and Logic ---
@@ -348,16 +363,6 @@ document.addEventListener('DOMContentLoaded', function() {
             objections: `<div class="space-y-6"><div><h4 class="text-lg font-semibold text-gray-800">Objection: "I don't want to give up control."</h4><p class="text-gray-600 mt-1"><strong>Response:</strong> "I understand. You remain the strategist by setting the profit target. The AI just acts as your tactical assistant, making billions of calculations to hit that goal."</p></div></div>`,
             implementation: `<ol class="list-decimal list-inside space-y-2 text-gray-700"><li>Navigate to <strong>Campaigns</strong> > Select campaign.</li><li>Go to <strong>Settings</strong> > <strong>Bidding</strong>.</li><li>Click <strong>'Change bid strategy'</strong> > Select <strong>'Target ROAS'</strong>.</li><li>Enter target percentage (e.g., <strong>500%</strong> for 5x return).</li><li>Click <strong>'Save'</strong>.</li></ol>`
         },
-        tIS: { // Added for completeness, though not in the funnel
-            title: "Target Impression Share",
-            subtitle: "Pitch for Brand Defense and Market Dominance",
-            saleHook: "I was reviewing how your brand appears against competitors and saw an opportunity to ensure you are consistently the most visible business for your most important search terms.",
-            transition: "Great, ensuring top visibility is a clear goal. Now let's talk about the specific keywords where this visibility matters most.",
-            gil: `<div class="mb-6 pb-6 border-b border-gray-200"><h4 class="text-xl font-bold text-gray-800 mb-2">Key Questions (GIL):</h4><ul class="list-disc list-inside space-y-1 text-lg text-gray-600"><li>"How important is it for you to appear at the very top of the search results for your own brand name?"</li><li>"Are there key competitors that you absolutely want to outrank whenever they appear?"</li><li>"Is a key goal to be seen as the number one choice in the Hyderabad market?"</li><li>"Are you more concerned with visibility and brand presence than direct conversions for this specific campaign?"</li><li>"Which specific search terms do you feel you *must* own?"</li></ul></div>`,
-            pitch: `<div class="space-y-4"><div><h4 class="text-xl font-bold text-gray-800">The "Why" (The Problem):</h4><p class="text-lg text-gray-600">"If a customer searches for you and a competitor shows up first, you risk losing that customer. Brand visibility directly translates to customer trust."</p></div><div><h4 class="text-xl font-bold text-gray-800">The "What" (The Solution):</h4><p class="text-lg text-gray-600">"The strategy is **Target Impression Share**. It's a rule where we tell Google, 'For these specific keywords, I want to be at the absolute top of the search results 80% of the time.'"</p></div><div><h4 class="text-xl font-bold text-gray-800">The "Impact" (The Benefit):</h4><p class="text-lg text-gray-600">"The impact is brand dominance. You protect your brand name and establish your business as the leader in your space."</p></div></div>`,
-            objections: `<div class="space-y-6"><div><h4 class="text-lg font-semibold text-gray-800">Objection: "Won't this get very expensive?"</h4><p class="text-gray-600 mt-1"><strong>Response:</strong> "That's a valid concern. We use this surgically on your most important keywords. Crucially, we can set a 'maximum CPC bid limit' which acts as a safety net to ensure you never overpay for that visibility."</p></div></div>`,
-            implementation: `<ol class="list-decimal list-inside space-y-2 text-gray-700"><li>Navigate to <strong>Campaigns</strong> > Select campaign.</li><li>Go to <strong>Settings</strong> > <strong>Bidding</strong>.</li><li>Click <strong>'Change bid strategy'</strong> > Select <strong>'Target impression share'</strong>.</li><li>Choose where ads should appear (e.g., Absolute top of page).</li><li>Set the Impression share percentage to target.</li><li>Set a Max. CPC bid limit as a cost-control safety net.</li><li>Click <strong>'Save'</strong>.</li></ol>`
-        },
     };
 
     const stepperEl = document.getElementById('stepper');
@@ -403,7 +408,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const data = strategyData[strategyKey];
         if (!data) return;
 
-        // Update stepper UI
         const stepperItems = stepperEl.querySelectorAll('.stepper-item');
         stepperItems.forEach((item, index) => {
             item.classList.remove('active', 'completed');
@@ -414,11 +418,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Update content
         strategyTitleEl.textContent = data.title;
         strategySubtitleEl.textContent = data.subtitle;
         
-        // Dynamically insert sale hook and transition text
         document.getElementById('standard-content').innerHTML = standardPitchContent;
         document.getElementById('dynamic-sale-hook').textContent = data.saleHook;
         document.getElementById('dynamic-transition').textContent = data.transition;
@@ -433,7 +435,6 @@ document.addEventListener('DOMContentLoaded', function() {
         strategyGuideEl.style.display = 'block';
         welcomeMessageEl.style.display = 'none';
 
-        // Set the 'Standard Pitch' tab as active by default
         tabs.forEach(tab => {
             tab.classList.remove('active');
             if (tab.dataset.tab === 'standard') {
@@ -451,13 +452,9 @@ document.addEventListener('DOMContentLoaded', function() {
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
             const targetTab = tab.dataset.tab;
-            
             tabs.forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
-
-            pitchSections.forEach(section => {
-                section.classList.remove('active');
-            });
+            pitchSections.forEach(section => section.classList.remove('active'));
             document.getElementById(`${targetTab}-content`).classList.add('active');
         });
     });
@@ -465,4 +462,4 @@ document.addEventListener('DOMContentLoaded', function() {
     renderStepper();
 
 });
-```
+
