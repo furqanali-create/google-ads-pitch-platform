@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Ads Pitch & Training Platform</title>
+    <title>PITCHify - Google Ads Pitch & Training Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,10 +11,10 @@
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="text-gray-800">
+<body class="text-gray-800 bg-slate-100">
 
     <!-- =========== Login / Signup Page =========== -->
-    <div id="loginPage" class="page active min-h-screen flex items-center justify-center bg-gray-100">
+    <div id="loginPage" class="page active min-h-screen flex items-center justify-center bg-slate-100">
         <div class="w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-lg">
             <div class="text-center">
                  <svg class="h-12 w-12 mx-auto mb-4" viewBox="0 0 24 24">
@@ -56,7 +56,7 @@
     </div>
 
     <!-- =========== Quiz Page =========== -->
-    <div id="quizPage" class="page min-h-screen flex items-center justify-center bg-gray-100">
+    <div id="quizPage" class="page min-h-screen flex items-center justify-center bg-slate-100">
          <div class="w-full max-w-2xl p-8 space-y-6 bg-white rounded-xl shadow-lg">
              <div class="text-center">
                 <h1 class="text-3xl font-extrabold text-gray-900">Knowledge Check</h1>
@@ -101,146 +101,153 @@
 
     <!-- =========== Main Application Wrapper =========== -->
     <div id="mainAppContainer" class="page">
-        <!-- Header -->
-        <header class="bg-white shadow-sm sticky top-0 z-50">
-            <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-                <a href="#" class="text-2xl font-bold text-gray-700 flex items-center">
-                    <svg class="h-8 w-8 mr-2" viewBox="0 0 24 24">
-                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
-                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                        <path fill="none" d="M1 1h22v22H1z"/>
-                    </svg>
-                    Pitch Platform
-                </a>
-                <div class="flex items-center space-x-6">
-                    <a href="#" class="app-nav-link text-gray-600 hover:text-blue-600 font-medium" data-page="toolPage">Tool</a>
-                    <a href="#" class="app-nav-link text-gray-600 hover:text-blue-600 font-medium" data-page="aboutPage">About</a>
-                    <a href="#" class="app-nav-link text-gray-600 hover:text-blue-600 font-medium" data-page="leaderboardPage">Leaderboard</a>
-                    <a href="#" class="app-nav-link text-gray-600 hover:text-blue-600 font-medium" data-page="suggestionsPage">Suggestions</a>
-                    <button id="logoutButton" class="text-sm text-red-500 hover:text-red-700 font-semibold">Logout</button>
+        <div class="flex h-screen bg-slate-100">
+            <!-- Sidebar -->
+            <aside class="w-64 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col">
+                <div class="h-16 flex-shrink-0 flex items-center justify-center px-4 border-b">
+                     <a href="#" class="text-2xl font-bold text-gray-700 flex items-center">
+                        <svg class="h-8 w-8 mr-2" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                            <path fill="none" d="M1 1h22v22H1z"/>
+                        </svg>
+                        PITCHify
+                    </a>
                 </div>
-            </nav>
-        </header>
+                <nav class="flex-1 overflow-y-auto p-4 space-y-2">
+                    <a href="#" class="app-nav-link active" data-page="toolPage">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor"><path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z"/><path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z"/><path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z"/></svg>
+                        <span>Pitching Tool</span>
+                    </a>
+                    <a href="#" class="app-nav-link" data-page="leaderboardPage">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v1.046l4.444 3.229a1 1 0 01.256.83l-1.04 4.887a1 1 0 01-.986.758H5.326a1 1 0 01-.986-.758l-1.04-4.887a1 1 0 01.256-.83L8 3.046V2a1 1 0 01.7-1.046zM10 5a1 1 0 011 1v1a1 1 0 11-2 0V6a1 1 0 011-1zm-4.111 5.056l.5 2.338h7.222l.5-2.338a22.25 22.25 0 00-8.222 0z" clip-rule="evenodd"/></svg>
+                        <span>Leaderboard</span>
+                    </a>
+                     <a href="#" class="app-nav-link" data-page="suggestionsPage">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"/><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"/></svg>
+                        <span>Suggestions</span>
+                    </a>
+                     <a href="#" class="app-nav-link" data-page="aboutPage">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+                        <span>About</span>
+                    </a>
+                </nav>
+                <div class="p-4 mt-auto border-t">
+                    <button id="logoutButton" class="w-full flex items-center justify-center py-2 px-4 rounded-lg text-sm text-red-600 bg-red-50 hover:bg-red-100 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/></svg>
+                        Logout
+                    </button>
+                </div>
+            </aside>
 
-        <main class="container mx-auto px-4 sm:px-6 py-12">
-            <!-- Tool Page -->
-            <div id="toolPage" class="app-page active">
-                <div class="grid lg:grid-cols-3 gap-8">
-                    <!-- Left Column: Stepper -->
-                    <div class="lg:col-span-1">
-                        <div class="bg-white p-6 rounded-xl shadow-lg">
-                            <h2 class="text-xl font-bold text-gray-900 mb-1">Pitching Funnel</h2>
-                            <p class="text-gray-600 mb-6 text-sm">Follow this path for a logical client conversation.</p>
-                            <div id="stepper" class="space-y-2">
-                                <!-- Stepper items will be injected here -->
-                            </div>
+            <!-- Main Content -->
+            <div class="flex-1 flex flex-col overflow-hidden">
+                <header class="bg-white border-b h-16 flex-shrink-0">
+                    <div class="container mx-auto px-6 h-full flex items-center">
+                        <h1 id="page-title" class="text-xl font-semibold text-gray-800">Pitching Tool</h1>
+                    </div>
+                </header>
+                <main id="main-content" class="flex-1 overflow-x-hidden overflow-y-auto p-6 md:p-8 lg:p-12">
+                     <!-- Content for each page will be loaded here dynamically -->
+                </main>
+                 <!-- Footer -->
+                <footer class="bg-white text-gray-500 border-t flex-shrink-0">
+                    <div class="container mx-auto px-6 py-3 flex flex-col sm:flex-row justify-between items-center text-xs">
+                        <p class="mb-2 sm:mb-0">&copy; 2025 PITCHify. For internal use only.</p>
+                        <div class="flex items-center">
+                            <span class="mr-2">Powered by</span>
+                            <svg class="h-5 w-auto" viewBox="0 0 100 25" xmlns="http://www.w3.org/2000/svg"><g fill-rule="evenodd"><path d="M49.333 13.431l-2.422 4.043-2.422-4.043-4.043-2.422 4.043-2.422 2.422-4.043 2.422 4.043 4.043 2.422z" fill="#F36448"></path><path d="M49.333 13.431l-2.422 4.043-2.422-4.043-4.043-2.422 4.043-2.422 2.422-4.043 2.422 4.043 4.043 2.422z" fill="#F36448"></path><path d="M92.835 2.146l-4.042 6.815h-4.903l6.541 4.195-2.003 7.822 6.54-4.814 6.541 4.814-2-7.822 6.54-4.195h-4.902z" fill="#15A2D2"></path><path d="M64.663 11.23l-3.327 5.62h-4.03l5.378 3.45-1.646 6.43 5.378-3.957 5.378 3.957-1.646-6.43L71.6 11.23h-4.03z" fill="#80C342"></path><path d="M30.334 1.25l-5.62 9.533H20l7.51 4.814-2.822 11.002 7.51-5.54 7.51 5.54-2.822-11.002L44.398 10.783H35.95z" fill="#FBBB40"></path><path d="M11.998 0L6.73 9.776H0l5.293 6.04L2.87 24l9.128-7.464L21.127 24l-2.422-8.184L24 9.776h-6.73L11.998 0z" fill="#4355A0"></path></g></svg>
+                            <span class="ml-1 font-semibold text-gray-700">MarketStar</span>
                         </div>
                     </div>
-
-                    <!-- Right Column: Pitch Guide -->
-                    <div class="lg:col-span-2">
-                        <div id="strategy-guide" class="bg-white p-8 rounded-xl shadow-lg" style="display: none;">
-                            <h2 id="strategy-title" class="text-3xl font-extrabold text-blue-800"></h2>
-                            <p id="strategy-subtitle" class="text-gray-600 mt-1"></p>
-                            <div class="mt-6 border-b border-gray-200">
-                                <nav class="-mb-px flex space-x-6 overflow-x-auto" aria-label="Tabs">
-                                    <button class="tab-button active" data-tab="standard">Call Flow</button>
-                                    <button class="tab-button" data-tab="conversion_tracking">Conv. Tracking</button>
-                                    <button class="tab-button" data-tab="pitch">Strategy Pitch</button>
-                                    <button class="tab-button" data-tab="budget">Budget Pitch</button>
-                                    <button class="tab-button" data-tab="objections">Objections</button>
-                                    <button class="tab-button" data-tab="implementation">Implementation</button>
-                                    <button class="tab-button" data-tab="closing">Closing</button>
-                                </nav>
-                            </div>
-                             <div class="mt-8">
-                                <div id="standard-content" class="pitch-section active"></div>
-                                <div id="conversion_tracking-content" class="pitch-section"></div>
-                                <div id="pitch-content" class="pitch-section"></div>
-                                <div id="budget-content" class="pitch-section"></div>
-                                <div id="objections-content" class="pitch-section"></div>
-                                <div id="implementation-content" class="pitch-section"></div>
-                                <div id="closing-content" class="pitch-section"></div>
-                            </div>
-                        </div>
-                         <div id="welcome-message" class="text-center p-12 bg-white rounded-xl shadow-lg">
-                             <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-16 w-16 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 12L3 12m4 4L7 8m10 8V4m0 12l4-4m-4 4l-4-8" />
-                              </svg>
-                            <h3 class="mt-4 text-xl font-semibold text-gray-800">Select a Pitching Stage</h3>
-                            <p class="mt-1 text-gray-500">Choose a step from the funnel on the left to get started.</p>
-                        </div>
-                    </div>
-                </div>
+                </footer>
             </div>
-            
-            <!-- About Page -->
-            <div id="aboutPage" class="app-page bg-white p-8 rounded-xl shadow-lg">
-                 <h2 class="text-3xl font-extrabold text-gray-900">About the Pitch Platform</h2>
-                <div class="mt-4 text-lg text-gray-600 space-y-4">
-                    <p>This tool is designed to empower Google Ads Account Managers at MarketStar with a structured, effective, and consistent framework for client conversations.</p>
-                    <p>The goal is to move beyond simple recommendations and guide clients through a logical journey of optimization, starting with foundational elements like conversion tracking, progressing through the strategic selection of a bidding strategy, and addressing crucial topics like budget and potential objections.</p>
-                    <p>By following the built-in call flow and leveraging the tailored scripts, you can deliver high-impact consultations that drive client success and build stronger partnerships.</p>
-                </div>
-            </div>
-
-            <!-- Leaderboard Page -->
-            <div id="leaderboardPage" class="app-page bg-white p-8 rounded-xl shadow-lg">
-                <h2 class="text-3xl font-extrabold text-gray-900">Quiz Leaderboard</h2>
-                <p class="mt-2 text-gray-600">Top performers on the initial knowledge check.</p>
-                <div class="mt-6 flow-root">
-                    <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                        <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                            <table class="min-w-full divide-y divide-gray-300">
-                                <thead>
-                                    <tr>
-                                        <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Rank</th>
-                                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Name</th>
-                                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Score</th>
-                                         <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="leaderboard-body" class="divide-y divide-gray-200">
-                                    <!-- Leaderboard data will be populated here -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-             <!-- Suggestions Page -->
-            <div id="suggestionsPage" class="app-page bg-white p-8 rounded-xl shadow-lg">
-                <h2 class="text-3xl font-extrabold text-gray-900">Suggestion Box</h2>
-                <p class="mt-2 text-gray-600">Have an idea to improve this tool? We'd love to hear it!</p>
-                <form id="suggestionForm" class="mt-6 space-y-4">
-                    <div>
-                         <label for="suggestionText" class="block text-sm font-medium text-gray-700">Your Suggestion</label>
-                         <textarea id="suggestionText" name="suggestionText" rows="4" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
-                    </div>
-                     <p id="suggestion-success" class="text-xs text-center text-green-600"></p>
-                    <div>
-                        <button type="submit" class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Submit Suggestion</button>
-                    </div>
-                </form>
-            </div>
-
-        </main>
-        
-        <!-- Footer -->
-        <footer class="bg-gray-100 text-gray-500 border-t">
-            <div class="container mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center text-sm">
-                <p class="mb-2 sm:mb-0">&copy; 2025 Google Ads Account Manager Tool. For internal use only.</p>
-                <div class="flex items-center">
-                    <span class="mr-2">Powered by</span>
-                     <svg class="h-5 w-auto" viewBox="0 0 100 25" xmlns="http://www.w3.org/2000/svg"><g fill-rule="evenodd"><path d="M49.333 13.431l-2.422 4.043-2.422-4.043-4.043-2.422 4.043-2.422 2.422-4.043 2.422 4.043 4.043 2.422z" fill="#F36448"></path><path d="M49.333 13.431l-2.422 4.043-2.422-4.043-4.043-2.422 4.043-2.422 2.422-4.043 2.422 4.043 4.043 2.422z" fill="#F36448"></path><path d="M92.835 2.146l-4.042 6.815h-4.903l6.541 4.195-2.003 7.822 6.54-4.814 6.541 4.814-2-7.822 6.54-4.195h-4.902z" fill="#15A2D2"></path><path d="M64.663 11.23l-3.327 5.62h-4.03l5.378 3.45-1.646 6.43 5.378-3.957 5.378 3.957-1.646-6.43L71.6 11.23h-4.03z" fill="#80C342"></path><path d="M30.334 1.25l-5.62 9.533H20l7.51 4.814-2.822 11.002 7.51-5.54 7.51 5.54-2.822-11.002L44.398 10.783H35.95z" fill="#FBBB40"></path><path d="M11.998 0L6.73 9.776H0l5.293 6.04L2.87 24l9.128-7.464L21.127 24l-2.422-8.184L24 9.776h-6.73L11.998 0z" fill="#4355A0"></path></g></svg>
-                    <span class="ml-1 font-semibold text-gray-700">MarketStar</span>
-                </div>
-            </div>
-        </footer>
+        </div>
     </div>
+
+    <!-- Templates for dynamic page content -->
+    <template id="toolPageContent">
+         <div class="grid lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-1">
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-xl font-bold text-gray-900 mb-1">Pitching Funnel</h2>
+                    <p class="text-gray-600 mb-6 text-sm">Follow this path for a logical client conversation.</p>
+                    <div id="stepper" class="space-y-2"></div>
+                </div>
+            </div>
+            <div class="lg:col-span-2">
+                <div id="strategy-guide" class="bg-white p-8 rounded-xl shadow-lg" style="display: none;">
+                    <h2 id="strategy-title" class="text-3xl font-extrabold text-blue-800"></h2>
+                    <p id="strategy-subtitle" class="text-gray-600 mt-1"></p>
+                    <div class="mt-6 border-b border-gray-200">
+                        <nav class="-mb-px flex space-x-6 overflow-x-auto" aria-label="Tabs">
+                            <button class="tab-button active" data-tab="standard">Call Flow</button>
+                            <button class="tab-button" data-tab="conversion_tracking">Conv. Tracking</button>
+                            <button class="tab-button" data-tab="pitch">Strategy Pitch</button>
+                            <button class="tab-button" data-tab="budget">Budget Pitch</button>
+                            <button class="tab-button" data-tab="objections">Objections</button>
+                            <button class="tab-button" data-tab="implementation">Implementation</button>
+                            <button class="tab-button" data-tab="closing">Closing</button>
+                        </nav>
+                    </div>
+                     <div class="mt-8">
+                        <div id="standard-content" class="pitch-section active"></div>
+                        <div id="conversion_tracking-content" class="pitch-section"></div>
+                        <div id="pitch-content" class="pitch-section"></div>
+                        <div id="budget-content" class="pitch-section"></div>
+                        <div id="objections-content" class="pitch-section"></div>
+                        <div id="implementation-content" class="pitch-section"></div>
+                        <div id="closing-content" class="pitch-section"></div>
+                    </div>
+                </div>
+                 <div id="welcome-message" class="text-center p-12 bg-white rounded-xl shadow-lg">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-16 w-16 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 12L3 12m4 4L7 8m10 8V4m0 12l4-4m-4 4l-4-8" />
+                      </svg>
+                    <h3 class="mt-4 text-xl font-semibold text-gray-800">Select a Pitching Stage</h3>
+                    <p class="mt-1 text-gray-500">Choose a step from the funnel on the left to get started.</p>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="aboutPageContent">
+        <div class="bg-white p-8 rounded-xl shadow-lg">
+             <h2 class="text-3xl font-extrabold text-gray-900">About PITCHify</h2>
+            <div class="mt-4 text-lg text-gray-600 space-y-4">
+                <p>This tool is designed to empower Google Ads Account Managers at MarketStar with a structured, effective, and consistent framework for client conversations.</p>
+                <p>The goal is to move beyond simple recommendations and guide clients through a logical journey of optimization, starting with foundational elements like conversion tracking, progressing through the strategic selection of a bidding strategy, and addressing crucial topics like budget and potential objections.</p>
+                <p>By following the built-in call flow and leveraging the tailored scripts, you can deliver high-impact consultations that drive client success and build stronger partnerships.</p>
+            </div>
+        </div>
+    </template>
+    
+    <template id="leaderboardPageContent">
+        <div class="bg-white p-8 rounded-xl shadow-lg">
+            <h2 class="text-3xl font-extrabold text-gray-900">Quiz Leaderboard</h2>
+            <p class="mt-2 text-gray-600">Top performers on the initial knowledge check.</p>
+             <!-- The rest of the leaderboard table structure is generated in JS -->
+        </div>
+    </template>
+
+    <template id="suggestionsPageContent">
+         <div class="bg-white p-8 rounded-xl shadow-lg">
+            <h2 class="text-3xl font-extrabold text-gray-900">Suggestion Box</h2>
+            <p class="mt-2 text-gray-600">Have an idea to improve this tool? We'd love to hear it!</p>
+            <form id="suggestionForm" class="mt-6 space-y-4">
+                <div>
+                     <label for="suggestionText" class="block text-sm font-medium text-gray-700">Your Suggestion</label>
+                     <textarea id="suggestionText" name="suggestionText" rows="4" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
+                </div>
+                 <p id="suggestion-success" class="text-xs text-center text-green-600"></p>
+                <div>
+                    <button type="submit" class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Submit Suggestion</button>
+                </div>
+            </form>
+        </div>
+    </template>
     
     <!-- IMPORTANT: Load script as a module -->
     <script type="module" src="script.js"></script>
