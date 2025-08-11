@@ -11,10 +11,11 @@ body {
     border-bottom-width: 2px;
     border-color: transparent;
     font-weight: 500;
-    font-size: 1.125rem;
-    line-height: 1.75rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
     color: #4b5563; /* gray-600 */
     flex-shrink: 0;
+    margin-right: 1.5rem;
 }
 .tab-button:hover {
     color: #1f2937; /* gray-800 */
