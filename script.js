@@ -387,7 +387,6 @@ const quizContainer = document.getElementById('quiz-container');
 const successAnimationEl = document.getElementById('success-animation');
 
 function loadNewQuizQuestion() {
-    // Select a random question from the pool
     currentQuestion = quizQuestions[Math.floor(Math.random() * quizQuestions.length)];
     
     quizContainer.innerHTML = `
