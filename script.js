@@ -47,6 +47,25 @@ let currentUser = null;
 let currentUsername = '';
 let currentUserRole = 'rep'; // Default role
 
+const quizQuestions = [
+    {
+        question: "What is the foundational prerequisite for almost all value-based Smart Bidding strategies?",
+        options: { a: "A high daily budget", b: "Accurate Conversion Tracking", c: "At least 5 ad groups" },
+        correct: "b"
+    },
+    {
+        question: "Which bidding strategy is best suited for an e-commerce client whose primary goal is achieving a specific return on their ad spend?",
+        options: { a: "Maximize Clicks", b: "Target CPA", c: "Target ROAS" },
+        correct: "c"
+    },
+    {
+        question: "A client wants their ads at the absolute top of the page 80% of the time. Which strategy should you pitch?",
+        options: { a: "Target Impression Share", b: "Maximize Conversions", c: "Manual CPC" },
+        correct: "a"
+    }
+];
+let currentQuestion = {};
+
 function showPage(pageId) {
     pages.forEach(page => page.classList.remove('active'));
     const pageToShow = document.getElementById(pageId);
@@ -72,7 +91,7 @@ async function showAppPage(pageId) {
         mainContentContainer.innerHTML = template.innerHTML;
 
         if (pageId === 'leaderboardPage') {
-            mainContentContainer.innerHTML = `<div class="bg-gray-800 bg-opacity-50 border border-gray-700 p-8 rounded-xl shadow-lg"><h2 class="text-3xl font-extrabold text-white">Quiz Leaderboard</h2><p class="mt-2 text-gray-400">Top performers on the initial knowledge check.</p><div class="text-center p-12"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto"></div><p class="mt-4">Loading Leaderboard...</p></div></div>`;
+            mainContentContainer.innerHTML = `<div class="bg-gray-800 bg-opacity-50 border border-gray-700 p-8 rounded-xl shadow-lg"><h2 class="text-3xl font-extrabold text-white">Quiz Leaderboard</h2><p class="mt-2 text-gray-400">Users who have passed the knowledge check.</p><div class="text-center p-12"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto"></div><p class="mt-4">Loading Leaderboard...</p></div></div>`;
             await fetchLeaderboard();
         }
         
@@ -243,10 +262,6 @@ async function handleSuggestionSubmit(e) {
     }
 }
 
-function bindQuizRetakeEvents() {
-    // This is a placeholder for future quiz module logic
-}
-
 appNavLinks.forEach(link => {
     link.addEventListener('click', (e) => {
         e.preventDefault();
@@ -356,6 +371,7 @@ onAuthStateChanged(auth, async (user) => {
             showAppPage('toolPage');
         } else {
             showPage('quizPage');
+            loadNewQuizQuestion();
         }
     } else {
         currentUser = null;
@@ -366,13 +382,43 @@ onAuthStateChanged(auth, async (user) => {
 
 // --- Quiz Logic ---
 const submitQuizButton = document.getElementById('submitQuizButton');
-const quizErrorEl = document.getElementById('quiz-error');
+const quizFeedbackEl = document.getElementById('quiz-feedback');
+const quizContainer = document.getElementById('quiz-container');
+const successAnimationEl = document.getElementById('success-animation');
+
+function loadNewQuizQuestion() {
+    // Select a random question from the pool
+    currentQuestion = quizQuestions[Math.floor(Math.random() * quizQuestions.length)];
+    
+    quizContainer.innerHTML = `
+        <div class="quiz-question">
+            <p class="font-semibold text-lg text-white">${currentQuestion.question}</p>
+            <div class="mt-4 space-y-2">
+                ${Object.entries(currentQuestion.options).map(([key, value]) => `
+                    <label class="flex items-center p-3 rounded-lg border border-gray-700 hover:bg-gray-700 transition-colors cursor-pointer">
+                        <input type="radio" name="key-question" value="${key}" class="form-radio"> 
+                        <span class="ml-3">${value}</span>
+                    </label>
+                `).join('')}
+            </div>
+        </div>
+    `;
+    quizFeedbackEl.textContent = '';
+    submitQuizButton.disabled = false;
+    successAnimationEl.classList.add('hidden');
+    quizContainer.classList.remove('hidden');
+}
 
 submitQuizButton.addEventListener('click', async () => {
     const answer = document.querySelector('input[name="key-question"]:checked')?.value;
     
     if (answer) {
-        if (answer === 'b') { // The correct answer is 'b'
+        if (answer === currentQuestion.correct) {
+            quizFeedbackEl.textContent = '';
+            quizContainer.classList.add('hidden');
+            successAnimationEl.classList.remove('hidden');
+            submitQuizButton.disabled = true;
+
             try {
                 const leaderboardRef = doc(db, 'leaderboard', currentUser.uid);
                 await setDoc(leaderboardRef, {
@@ -380,16 +426,24 @@ submitQuizButton.addEventListener('click', async () => {
                     score: 'Passed',
                     timestamp: serverTimestamp()
                 });
-                showPage('mainAppContainer');
-                showAppPage('toolPage');
+                setTimeout(() => {
+                    showPage('mainAppContainer');
+                    showAppPage('toolPage');
+                }, 1500); // Wait for animation
             } catch (error) {
-                quizErrorEl.textContent = "Error saving score: " + error.message;
+                quizFeedbackEl.textContent = "Error saving score: " + error.message;
+                quizFeedbackEl.classList.remove('text-green-400');
+                quizFeedbackEl.classList.add('text-red-400');
             }
         } else {
-            quizErrorEl.textContent = 'Incorrect answer. Please review the Resource Library and try again.';
+            quizFeedbackEl.textContent = 'Incorrect answer. Please review the Resource Library and try again.';
+            quizFeedbackEl.classList.remove('text-green-400');
+            quizFeedbackEl.classList.add('text-red-400');
         }
     } else {
-        quizErrorEl.textContent = 'Please select an answer.';
+        quizFeedbackEl.textContent = 'Please select an answer.';
+        quizFeedbackEl.classList.remove('text-green-400');
+        quizFeedbackEl.classList.add('text-red-400');
     }
 });
 
