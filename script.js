@@ -18,7 +18,8 @@ import {
     orderBy, 
     limit, 
     getDocs, 
-    serverTimestamp 
+    serverTimestamp,
+    where
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
 
@@ -38,8 +39,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// --- Remove the DOMContentLoaded wrapper ---
-
 // --- Page Navigation & State Management ---
 const pages = document.querySelectorAll('.page');
 const mainContentContainer = document.getElementById('main-content');
@@ -47,53 +46,120 @@ const appNavLinks = document.querySelectorAll('.app-nav-link');
 const pageTitleEl = document.getElementById('page-title');
 let currentUser = null;
 let currentUsername = '';
+let currentUserRole = 'rep'; // Default role
 
 function showPage(pageId) {
     pages.forEach(page => page.classList.remove('active'));
-    document.getElementById(pageId).classList.add('active');
+    const pageToShow = document.getElementById(pageId);
+    if(pageToShow) pageToShow.classList.add('active');
 }
 
 async function showAppPage(pageId) {
-    const pageContent = document.getElementById(pageId + 'Content');
-    if (!pageContent) return; // In case of invalid ID
+    const template = document.getElementById(pageId + 'Content');
+    if (!template) return;
 
-    // Update nav link active states
     appNavLinks.forEach(link => {
         link.classList.remove('active');
-        if (link.dataset.page === pageId) {
+        const linkPageId = link.dataset.page;
+        if (linkPageId === pageId) {
             link.classList.add('active');
             pageTitleEl.textContent = link.querySelector('span').textContent;
         }
     });
 
-    // Animate content change
     mainContentContainer.style.opacity = '0';
-    
-    // Add a loading spinner for data-intensive pages
-    if (pageId === 'leaderboardPage') {
-        mainContentContainer.innerHTML = `<div class="text-center p-12"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div><p class="mt-4">Loading Leaderboard...</p></div>`;
+
+    setTimeout(async () => {
+        mainContentContainer.innerHTML = template.innerHTML;
+
+        if (pageId === 'leaderboardPage') {
+            mainContentContainer.innerHTML = `<div class="bg-white p-8 rounded-xl shadow-lg"><h2 class="text-3xl font-extrabold text-gray-900">Quiz Leaderboard</h2><p class="mt-2 text-gray-600">Top performers on the initial knowledge check.</p><div class="text-center p-12"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div><p class="mt-4">Loading Leaderboard...</p></div></div>`;
+            await fetchLeaderboard();
+        }
+        
         mainContentContainer.style.opacity = '1';
-        await fetchLeaderboard();
+
+        // Bind events for the newly loaded content
+        if(pageId === 'toolPage') bindToolEvents();
+        if (pageId === 'suggestionsPage') bindSuggestionFormEvents();
+        if (pageId === 'quizRetakePage') bindQuizRetakeEvents();
+        if (pageId === 'clientsPage') bindClientEvents();
+    }, 200);
+}
+
+function bindClientEvents() {
+    const addClientBtn = document.getElementById('add-client-btn');
+    const clientModal = document.getElementById('client-modal');
+    const cancelClientBtn = document.getElementById('cancel-client-btn');
+    const saveClientBtn = document.getElementById('save-client-btn');
+    const clientListEl = document.getElementById('client-list');
+
+    const openModal = () => clientModal.classList.remove('hidden');
+    const closeModal = () => clientModal.classList.add('hidden');
+
+    addClientBtn.addEventListener('click', openModal);
+    cancelClientBtn.addEventListener('click', closeModal);
+    saveClientBtn.addEventListener('click', saveClientNote);
+
+    // Load clients from localStorage
+    loadClients();
+}
+
+function saveClientNote() {
+    const clientNameInput = document.getElementById('client-name');
+    const clientNotesInput = document.getElementById('client-notes');
+    const name = clientNameInput.value.trim();
+    const note = clientNotesInput.value.trim();
+    if (!name || !note) return;
+
+    let clients = JSON.parse(localStorage.getItem('clients')) || [];
+    const newNote = {
+        text: note,
+        date: new Date().toLocaleString()
+    };
+    
+    const existingClient = clients.find(c => c.name === name);
+    if (existingClient) {
+        existingClient.notes.push(newNote);
     } else {
-       mainContentContainer.innerHTML = pageContent.innerHTML;
+        clients.push({ name: name, notes: [newNote] });
     }
 
-    mainContentContainer.style.opacity = '1';
+    localStorage.setItem('clients', JSON.stringify(clients));
+    loadClients();
+    document.getElementById('client-modal').classList.add('hidden');
+    clientNameInput.value = '';
+    clientNotesInput.value = '';
+}
 
-    // Re-bind events for dynamically added content if necessary
-    if(pageId === 'toolPage') {
-        bindToolEvents();
-    } else if (pageId === 'suggestionsPage') {
-        bindSuggestionFormEvents();
+function loadClients() {
+    const clients = JSON.parse(localStorage.getItem('clients')) || [];
+    const clientListEl = document.getElementById('client-list');
+    if (!clientListEl) return;
+    clientListEl.innerHTML = '';
+    if (clients.length === 0) {
+        clientListEl.innerHTML = `<p class="text-gray-500 text-center">No clients added yet.</p>`;
+    } else {
+        clients.forEach(client => {
+            const clientEl = document.createElement('div');
+            clientEl.className = 'p-4 border rounded-lg';
+            let notesHtml = client.notes.map(note => `<div class="text-sm text-gray-500 mt-2 p-2 bg-slate-50 rounded"><span class="font-semibold">${note.date}:</span> ${note.text}</div>`).join('');
+            clientEl.innerHTML = `<h3 class="font-bold text-lg">${client.name}</h3>${notesHtml}`;
+            clientListEl.appendChild(clientEl);
+        });
     }
 }
 
+
 function bindToolEvents() {
-    // This function re-binds events for the tool page since its content is dynamically inserted
-    const stepperItems = document.querySelectorAll('.stepper-item');
+    renderStepper();
+    renderPinnedStrategies();
+    const stepperItems = document.querySelectorAll('#stepper .stepper-item');
     stepperItems.forEach((item, index) => {
         item.addEventListener('click', () => selectStrategy(item.dataset.strategyKey, index));
     });
+    
+    document.getElementById('pin-strategy-btn')?.addEventListener('click', handlePinStrategy);
 
     const tabs = document.querySelectorAll('#strategy-guide .tab-button');
      tabs.forEach(tab => {
@@ -103,10 +169,70 @@ function bindToolEvents() {
             tab.classList.add('active');
             const pitchSections = document.querySelectorAll('#strategy-guide .pitch-section');
             pitchSections.forEach(section => section.classList.remove('active'));
-            document.getElementById(`${targetTab}-content`).classList.add('active');
+            const targetSection = document.getElementById(`${targetTab}-content`);
+            if(targetSection) targetSection.classList.add('active');
+        });
+    });
+    
+    const searchInput = document.getElementById('search-funnel');
+    searchInput?.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const stepperItems = document.querySelectorAll('#stepper .stepper-item');
+        stepperItems.forEach(item => {
+            const title = item.querySelector('span').textContent.toLowerCase();
+            if (title.includes(searchTerm)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
         });
     });
 }
+
+function handlePinStrategy() {
+    const currentStrategy = document.getElementById('strategy-title').dataset.strategyKey;
+    if (!currentStrategy) return;
+    
+    let pinned = JSON.parse(localStorage.getItem('pinnedStrategies')) || [];
+    if (pinned.includes(currentStrategy)) {
+        pinned = pinned.filter(s => s !== currentStrategy);
+    } else {
+        pinned.push(currentStrategy);
+    }
+    localStorage.setItem('pinnedStrategies', JSON.stringify(pinned));
+    renderPinnedStrategies();
+    // Update pin icon state visually
+    const pinButton = document.getElementById('pin-strategy-btn');
+    if(pinned.includes(currentStrategy)) {
+        pinButton.classList.add('text-amber-500');
+    } else {
+        pinButton.classList.remove('text-amber-500');
+    }
+}
+
+function renderPinnedStrategies() {
+    const pinned = JSON.parse(localStorage.getItem('pinnedStrategies')) || [];
+    const pinnedListEl = document.getElementById('pinned-list');
+    if (!pinnedListEl) return;
+    pinnedListEl.innerHTML = '';
+    if (pinned.length === 0) {
+        pinnedListEl.innerHTML = `<p class="text-sm text-gray-500 text-center">Click the star icon on a strategy to pin it here.</p>`;
+        return;
+    }
+    pinned.forEach(key => {
+        const strategy = strategyData[key];
+        if (!strategy) return;
+        const button = document.createElement('button');
+        button.className = 'w-full text-left p-2 rounded-md bg-amber-50 hover:bg-amber-100 text-amber-800 font-semibold';
+        button.textContent = strategy.title;
+        button.onclick = () => {
+             const funnelIndex = funnelOrder.indexOf(key);
+             selectStrategy(key, funnelIndex);
+        };
+        pinnedListEl.appendChild(button);
+    });
+}
+
 
 function bindSuggestionFormEvents() {
     const suggestionForm = document.getElementById('suggestionForm');
@@ -138,6 +264,27 @@ async function handleSuggestionSubmit(e) {
     }
 }
 
+function bindQuizRetakeEvents() {
+    const retakeButton = document.getElementById('submitRetakeQuizButton');
+    if(retakeButton) {
+        retakeButton.addEventListener('click', () => {
+            const resultsEl = document.getElementById('quiz-retake-results');
+            const answers = {
+                rq1: document.querySelector('input[name="rq1"]:checked')?.value,
+                rq2: document.querySelector('input[name="rq2"]:checked')?.value,
+                rq3: document.querySelector('input[name="rq3"]:checked')?.value,
+            };
+            const correctAnswers = { rq1: 'c', rq2: 'a', rq3: 'c' };
+            let score = 0;
+            if (answers.rq1 === correctAnswers.rq1) score++;
+            if (answers.rq2 === correctAnswers.rq2) score++;
+            if (answers.rq3 === correctAnswers.rq3) score++;
+
+            resultsEl.textContent = `You scored ${score} out of 3.`;
+            resultsEl.style.color = score === 3 ? 'green' : 'orange';
+        });
+    }
+}
 
 appNavLinks.forEach(link => {
     link.addEventListener('click', (e) => {
@@ -176,7 +323,7 @@ function toggleAuthMode() {
         toggleAuthModeEl.textContent = 'Already have an account? Login';
     }
 }
-toggleAuthMode(); // Initialize in login mode
+toggleAuthMode();
 
 toggleAuthModeEl.addEventListener('click', (e) => {
     e.preventDefault();
@@ -186,17 +333,26 @@ toggleAuthModeEl.addEventListener('click', (e) => {
 signupButton.addEventListener('click', async () => {
     const email = emailInput.value;
     const password = passwordInput.value;
-    const username = usernameInput.value;
+    const username = usernameInput.value.trim();
     if (!username) {
         authErrorEl.textContent = 'Please enter your name for the leaderboard.';
         return;
     }
-
+    
     try {
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("username", "==", username));
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+            authErrorEl.textContent = 'This username is already taken. Please choose another.';
+            return;
+        }
+
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const userRef = doc(db, 'users', userCredential.user.uid);
-        await setDoc(userRef, { username: username, email: email });
-        // Auth state change will handle showing the quiz page
+        // Assign role - for simulation, anyone with 'manager' in email is a manager
+        const role = email.includes('manager') ? 'manager' : 'rep';
+        await setDoc(userRef, { username: username, email: email, role: role });
     } catch (error) {
         authErrorEl.textContent = error.message;
     }
@@ -207,7 +363,6 @@ loginButton.addEventListener('click', async () => {
     const password = passwordInput.value;
     try {
         await signInWithEmailAndPassword(auth, email, password);
-        // Auth state change will handle page transition
     } catch (error) {
         authErrorEl.textContent = error.message;
     }
@@ -215,27 +370,31 @@ loginButton.addEventListener('click', async () => {
 
 logoutButton.addEventListener('click', async () => {
     await signOut(auth);
-    // Auth state change will handle page transition
 });
 
 onAuthStateChanged(auth, async (user) => {
+    const managerLinks = document.querySelectorAll('.manager-only');
     if (user) {
         currentUser = user;
         const userDocRef = doc(db, "users", user.uid);
         const docSnap = await getDoc(userDocRef);
         if (docSnap.exists()) {
             currentUsername = docSnap.data().username;
+            currentUserRole = docSnap.data().role || 'rep';
         }
+
+        // Role-based UI
+        if (currentUserRole === 'manager') {
+            managerLinks.forEach(link => link.style.display = 'flex');
+        } else {
+            managerLinks.forEach(link => link.style.display = 'none');
+        }
+
         const quizDocRef = doc(db, "leaderboard", user.uid);
         const quizDocSnap = await getDoc(quizDocRef);
         if (quizDocSnap.exists()) {
             showPage('mainAppContainer');
-            // Initial page load for the tool
-            const toolPageContent = document.getElementById('toolPageContent');
-            if (toolPageContent) {
-                mainContentContainer.innerHTML = toolPageContent.innerHTML;
-                bindToolEvents(); // Bind events after loading content
-            }
+            showAppPage('toolPage');
         } else {
             showPage('quizPage');
         }
@@ -258,25 +417,25 @@ submitQuizButton.addEventListener('click', async () => {
     };
     const correctAnswers = { q1: 'c', q2: 'a', q3: 'b' };
     
-    if (answers.q1 === correctAnswers.q1 && answers.q2 === correctAnswers.q2 && answers.q3 === correctAnswers.q3) {
-        try {
-            const leaderboardRef = doc(db, 'leaderboard', currentUser.uid);
-            await setDoc(leaderboardRef, {
-                name: currentUsername,
-                score: '3/3',
-                timestamp: serverTimestamp()
-            });
-            showPage('mainAppContainer');
-             const toolPageContent = document.getElementById('toolPageContent');
-            if (toolPageContent) {
-                mainContentContainer.innerHTML = toolPageContent.innerHTML;
-                bindToolEvents();
+    if (answers.q1 && answers.q2 && answers.q3) {
+        if (answers.q1 === correctAnswers.q1 && answers.q2 === correctAnswers.q2 && answers.q3 === correctAnswers.q3) {
+            try {
+                const leaderboardRef = doc(db, 'leaderboard', currentUser.uid);
+                await setDoc(leaderboardRef, {
+                    name: currentUsername,
+                    score: '3/3',
+                    timestamp: serverTimestamp()
+                });
+                showPage('mainAppContainer');
+                showAppPage('toolPage');
+            } catch (error) {
+                quizErrorEl.textContent = "Error saving score: " + error.message;
             }
-        } catch (error) {
-            quizErrorEl.textContent = "Error saving score: " + error.message;
+        } else {
+            quizErrorEl.textContent = 'Incorrect answers. Please review and try again.';
         }
     } else {
-        quizErrorEl.textContent = 'Incorrect answers. Please review and try again.';
+        quizErrorEl.textContent = 'Please answer all questions.';
     }
 });
 
@@ -285,7 +444,7 @@ async function fetchLeaderboard() {
     try {
         const q = query(collection(db, "leaderboard"), orderBy("timestamp", "desc"), limit(10));
         const querySnapshot = await getDocs(q);
-        let leaderboardHTML = `<div class="flow-root"><div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8"><div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8"><table class="min-w-full divide-y divide-gray-300"><thead><tr><th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Rank</th><th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Name</th><th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Score</th><th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Date</th></tr></thead><tbody class="divide-y divide-gray-200">`;
+        let leaderboardHTML = `<div class="bg-white p-8 rounded-xl shadow-lg"><h2 class="text-3xl font-extrabold text-gray-900">Quiz Leaderboard</h2><p class="mt-2 text-gray-600">Top performers on the initial knowledge check.</p><div class="flow-root mt-6"><div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8"><div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8"><table class="min-w-full divide-y divide-gray-300"><thead><tr><th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Rank</th><th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Name</th><th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Score</th><th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Date</th></tr></thead><tbody class="divide-y divide-gray-200">`;
         
         let rank = 1;
         querySnapshot.forEach((doc) => {
@@ -298,7 +457,7 @@ async function fetchLeaderboard() {
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${date}</td>
             </tr>`;
         });
-        leaderboardHTML += `</tbody></table></div></div></div>`;
+        leaderboardHTML += `</tbody></table></div></div></div></div>`;
         mainContentContainer.innerHTML = leaderboardHTML;
     } catch (error) {
         mainContentContainer.innerHTML = `<p class="text-center text-red-500">Error loading leaderboard.</p>`;
@@ -307,7 +466,6 @@ async function fetchLeaderboard() {
 
 
 // --- Tool Data and Logic ---
-// ... [ This entire section needs to be extracted from the old script and placed here ]
 const standardPitchContent = `
     <div class="space-y-4 text-lg text-gray-700">
         <div class="p-4 bg-slate-100 rounded-lg">
@@ -359,12 +517,22 @@ const conversionTrackingContent = `
 const closingContent = `
     <div class="space-y-4 text-lg text-gray-700">
         <div class="p-4 bg-slate-100 rounded-lg">
+             <h4 class="font-bold text-gray-800 mb-2">Pitch Success Tracking</h4>
+             <p class="mb-2 text-sm">Log the outcome of this pitch for team analytics.</p>
+             <div class="flex space-x-2">
+                 <button class="flex-1 text-center py-2 px-3 text-sm font-medium rounded-md bg-green-100 text-green-800 hover:bg-green-200">Accepted</button>
+                 <button class="flex-1 text-center py-2 px-3 text-sm font-medium rounded-md bg-red-100 text-red-800 hover:bg-red-200">Rejected</button>
+                 <button class="flex-1 text-center py-2 px-3 text-sm font-medium rounded-md bg-amber-100 text-amber-800 hover:bg-amber-200">Needs Follow-up</button>
+             </div>
+        </div>
+        <div class="p-4 bg-slate-100 rounded-lg">
             <h4 class="font-bold text-gray-800">Summarize</h4>
             <p>"Let me quickly recap. Your main goal is [Client's Goal]. To achieve this, we first ensured your conversion tracking is set up. Then, we implemented the **[Strategy Name]** bid strategy and set a competitive budget. This will help us achieve [desired impact]."</p>
         </div>
         <div class="p-4 bg-slate-100 rounded-lg">
-            <h4 class="font-bold text-gray-800">CONFIRM Email</h4>
-            <p>"I will send a summary email with everything we discussed and a link to my calendar to schedule a review call in 14 days. What is the best email address for me to use?"</p>
+            <h4 class="font-bold text-gray-800">CONFIRM Email & Schedule Follow-up</h4>
+            <p>"I will send a summary email with everything we discussed and a link to my calendar. Alternatively, we can schedule the 14-day follow-up call right now."</p>
+            <button id="schedule-gcal-btn" class="mt-2 inline-flex items-center justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700">Schedule in Google Calendar</button>
         </div>
         <div class="p-4 bg-slate-100 rounded-lg">
             <h4 class="font-bold text-gray-800">Additional Information & CSAT</h4>
@@ -450,27 +618,6 @@ const strategyData = {
     },
 };
 
-// --- Initial Render ---
-// Create a temporary div to hold the content of the pages
-const contentCache = document.createElement('div');
-contentCache.style.display = 'none';
-document.body.appendChild(contentCache);
-
-const appPageIds = ['toolPage', 'aboutPage', 'leaderboardPage', 'suggestionsPage'];
-appPageIds.forEach(id => {
-    const el = document.getElementById(id);
-    if(el) {
-        const contentDiv = document.createElement('div');
-        contentDiv.id = id + 'Content';
-        contentDiv.innerHTML = el.innerHTML;
-        contentCache.appendChild(contentDiv);
-        if(id !== 'toolPage') {
-            el.innerHTML = ''; // Clear the original container
-        }
-    }
-});
-
-
 const funnelOrder = ['mCPC', 'maxClicks', 'maxConversions', 'tCPA', 'maxConvValue', 'tROAS', 'tIS'];
 const funnelTitles = {
     mCPC: "Manual CPC Review",
@@ -488,19 +635,20 @@ function renderStepper() {
     stepperEl.innerHTML = '';
     funnelOrder.forEach((key, index) => {
         const item = document.createElement('div');
-        item.className = 'stepper-item border-l-4 border-gray-200 p-4 transition-all duration-200 cursor-pointer hover:bg-slate-50';
+        item.className = 'stepper-item border-l-4 border-gray-200 p-4 transition-all duration-200 cursor-pointer hover:bg-slate-50 flex justify-between items-center';
         item.dataset.strategyKey = key;
         item.innerHTML = `
             <div class="flex items-center">
                 <div class="stepper-circle h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600 mr-4">${index + 1}</div>
                 <span class="font-semibold text-gray-700">${funnelTitles[key]}</span>
             </div>
+            <div class="pin-icon text-gray-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.28 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+            </div>
         `;
         stepperEl.appendChild(item);
     });
 }
-renderStepper();
-
 
 function selectStrategy(strategyKey, selectedIndex) {
     const data = strategyData[strategyKey];
@@ -520,9 +668,18 @@ function selectStrategy(strategyKey, selectedIndex) {
     const welcomeMessageEl = document.getElementById('welcome-message');
     const strategyTitleEl = document.getElementById('strategy-title');
     const strategySubtitleEl = document.getElementById('strategy-subtitle');
+    const pinButton = document.getElementById('pin-strategy-btn');
 
     strategyTitleEl.textContent = data.title;
+    strategyTitleEl.dataset.strategyKey = strategyKey;
     strategySubtitleEl.textContent = data.subtitle;
+
+    const pinned = JSON.parse(localStorage.getItem('pinnedStrategies')) || [];
+    if(pinned.includes(strategyKey)) {
+        pinButton.classList.add('text-amber-500');
+    } else {
+        pinButton.classList.remove('text-amber-500');
+    }
     
     document.getElementById('standard-content').innerHTML = standardPitchContent;
     document.getElementById('dynamic-sale-hook').textContent = data.saleHook;
@@ -534,6 +691,13 @@ function selectStrategy(strategyKey, selectedIndex) {
     document.getElementById('objections-content').innerHTML = data.objections;
     document.getElementById('implementation-content').innerHTML = data.implementation;
     document.getElementById('closing-content').innerHTML = closingContent;
+    
+    document.getElementById('schedule-gcal-btn')?.addEventListener('click', () => {
+        const eventTitle = `Follow-up Call with [Client Name] re: ${data.title}`;
+        const eventDesc = `This is a 14-day follow-up call to review the performance of the new ${data.title} bid strategy.`;
+        const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventTitle)}&details=${encodeURIComponent(eventDesc)}`;
+        window.open(gcalUrl, '_blank');
+    });
 
     strategyGuideEl.style.display = 'block';
     welcomeMessageEl.style.display = 'none';
@@ -553,4 +717,5 @@ function selectStrategy(strategyKey, selectedIndex) {
         }
     });
 }
+```
 
