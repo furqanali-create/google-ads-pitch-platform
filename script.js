@@ -1,30 +1,44 @@
 document.addEventListener('DOMContentLoaded', function() {
     
+    // --- Firebase Configuration ---
+    // IMPORTANT: Replace this with your own Firebase project configuration!
+    const firebaseConfig = {
+      apiKey: "AIzaSyBY6QzDwyF3oDvQTfwTTFGtVqB7QefOhi0",
+      authDomain: "ads-pitch-platform.firebaseapp.com",
+      projectId: "ads-pitch-platform",
+      storageBucket: "ads-pitch-platform.firebasestorage.app",
+      messagingSenderId: "1080086729632",
+      appId: "1:1080086729632:web:366a3033e22eb2d8754ac5"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
     // --- Page Navigation & State Management ---
     const pages = document.querySelectorAll('.page');
     const appPages = document.querySelectorAll('.app-page');
     const appNavLinks = document.querySelectorAll('.app-nav-link');
-    const emailInput = document.getElementById('email');
-    let userEmail = '';
-
+    let currentUser = null;
+    let currentUsername = '';
+    
     function showPage(pageId) {
-        pages.forEach(page => {
-            page.classList.remove('active');
-        });
+        pages.forEach(page => page.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
     }
     
     function showAppPage(pageId) {
-        appPages.forEach(page => {
-            page.classList.remove('active');
-        });
+        appPages.forEach(page => page.classList.remove('active'));
         appNavLinks.forEach(link => {
             link.classList.remove('active');
-            if(link.dataset.page === pageId) {
-                link.classList.add('active');
-            }
+            if(link.dataset.page === pageId) link.classList.add('active');
         });
         document.getElementById(pageId).classList.add('active');
+        
+        if (pageId === 'leaderboardPage') {
+            fetchLeaderboard();
+        }
     }
 
     appNavLinks.forEach(link => {
@@ -34,32 +48,100 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // --- Login Logic ---
-    const sendOtpButton = document.getElementById('sendOtpButton');
+    // --- Authentication Logic ---
+    const loginPage = document.getElementById('loginPage');
     const loginButton = document.getElementById('loginButton');
-    const otpSection = document.getElementById('otpSection');
-    const otpInput = document.getElementById('otp');
-    const loginErrorEl = document.getElementById('login-error');
-    const otpMessageEl = document.getElementById('otp-message');
+    const signupButton = document.getElementById('signupButton');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const usernameInput = document.getElementById('username');
+    const usernameField = document.getElementById('username-field');
+    const authErrorEl = document.getElementById('auth-error');
+    const authTitleEl = document.getElementById('auth-title');
+    const toggleAuthModeEl = document.getElementById('toggle-auth-mode');
+    const logoutButton = document.getElementById('logoutButton');
+    let isLoginMode = true;
 
-    sendOtpButton.addEventListener('click', () => {
-        if (emailInput.value && emailInput.checkValidity()) {
-            userEmail = emailInput.value;
-            sendOtpButton.style.display = 'none';
+    function toggleAuthMode() {
+        isLoginMode = !isLoginMode;
+        if (isLoginMode) {
+            authTitleEl.textContent = 'Account Manager Login';
+            signupButton.style.display = 'none';
             loginButton.style.display = 'flex';
-            otpSection.style.display = 'block';
-            otpMessageEl.textContent = 'OTP Sent! (Hint: It\'s 123456)';
-            loginErrorEl.textContent = '';
+            usernameField.style.display = 'none';
+            toggleAuthModeEl.textContent = 'Need to create an account? Sign Up';
         } else {
-             loginErrorEl.textContent = 'Please enter a valid email address.';
+            authTitleEl.textContent = 'Create an Account';
+            signupButton.style.display = 'flex';
+            loginButton.style.display = 'none';
+            usernameField.style.display = 'block';
+            toggleAuthModeEl.textContent = 'Already have an account? Login';
         }
+        authErrorEl.textContent = '';
+    }
+    toggleAuthMode(); // Initialize in login mode
+
+    toggleAuthModeEl.addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleAuthMode();
+    });
+
+    signupButton.addEventListener('click', () => {
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        const username = usernameInput.value;
+        if (!username) {
+            authErrorEl.textContent = 'Please enter your name for the leaderboard.';
+            return;
+        }
+
+        auth.createUserWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                // Set username in Firestore
+                return db.collection('users').doc(userCredential.user.uid).set({
+                    username: username,
+                    email: email
+                });
+            })
+            .then(() => {
+                 showPage('quizPage');
+            })
+            .catch((error) => {
+                authErrorEl.textContent = error.message;
+            });
     });
 
     loginButton.addEventListener('click', () => {
-        if (otpInput.value === '123456') {
-            showPage('quizPage');
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        auth.signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                showPage('mainAppContainer');
+                showAppPage('toolPage');
+            })
+            .catch((error) => {
+                authErrorEl.textContent = error.message;
+            });
+    });
+    
+    logoutButton.addEventListener('click', () => {
+        auth.signOut().then(() => {
+            showPage('loginPage');
+        });
+    });
+
+    // Check auth state on page load
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            currentUser = user;
+            db.collection('users').doc(user.uid).get().then(doc => {
+                if(doc.exists) currentUsername = doc.data().username;
+            });
+            showPage('mainAppContainer');
+            showAppPage('toolPage');
         } else {
-            loginErrorEl.textContent = 'Invalid OTP. Please try again.';
+            currentUser = null;
+            showPage('loginPage');
         }
     });
 
@@ -76,25 +158,78 @@ document.addEventListener('DOMContentLoaded', function() {
         const correctAnswers = { q1: 'c', q2: 'a', q3: 'b' };
         
         if (answers.q1 === correctAnswers.q1 && answers.q2 === correctAnswers.q2 && answers.q3 === correctAnswers.q3) {
-            showPage('mainAppContainer');
-            showAppPage('toolPage');
+            // Save score to leaderboard
+            db.collection('leaderboard').doc(currentUser.uid).set({
+                name: currentUsername,
+                score: '3/3',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            })
+            .then(() => {
+                showPage('mainAppContainer');
+                showAppPage('toolPage');
+            })
+            .catch(error => {
+                quizErrorEl.textContent = "Error saving score: " + error.message;
+            });
+
         } else {
             quizErrorEl.textContent = 'Incorrect answers. Please review and try again.';
         }
     });
 
+    // --- Leaderboard Logic ---
+    const leaderboardBody = document.getElementById('leaderboard-body');
+    function fetchLeaderboard() {
+        db.collection('leaderboard').orderBy('timestamp', 'desc').limit(10).get()
+            .then(querySnapshot => {
+                leaderboardBody.innerHTML = '';
+                let rank = 1;
+                querySnapshot.forEach(doc => {
+                    const data = doc.data();
+                    const date = data.timestamp ? data.timestamp.toDate().toLocaleDateString() : 'N/A';
+                    const row = `<tr>
+                        <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">${rank++}</td>
+                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${data.name}</td>
+                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${data.score}</td>
+                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${date}</td>
+                    </tr>`;
+                    leaderboardBody.innerHTML += row;
+                });
+            })
+            .catch(error => {
+                leaderboardBody.innerHTML = `<tr><td colspan="4" class="text-center py-4">Error loading leaderboard.</td></tr>`;
+            });
+    }
+
     // --- Suggestion Form Logic ---
     const suggestionForm = document.getElementById('suggestionForm');
+    const suggestionText = document.getElementById('suggestionText');
+    const suggestionSuccessEl = document.getElementById('suggestion-success');
     suggestionForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        // This is a simulation. In a real app, this would send data to a backend.
-        // For now, we can link to a pre-filled Google Form URL if desired.
-        alert('Thank you for your suggestion!');
-        suggestionForm.reset();
+        const text = suggestionText.value;
+        if (!text) return;
+        
+        db.collection('suggestions').add({
+            suggestion: text,
+            user: currentUser.email,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        })
+        .then(() => {
+            suggestionSuccessEl.textContent = 'Thank you for your suggestion!';
+            suggestionForm.reset();
+            setTimeout(() => suggestionSuccessEl.textContent = '', 3000);
+        })
+        .catch(error => {
+            suggestionSuccessEl.textContent = 'Error: ' + error.message;
+            suggestionSuccessEl.classList.remove('text-green-600');
+            suggestionSuccessEl.classList.add('text-red-600');
+        });
     });
 
     // --- Tool Data and Logic ---
-    const standardPitchContent = `
+    // ... [ The entire strategyData object and related functions (renderStepper, selectStrategy, etc.) from the previous script go here ]
+     const standardPitchContent = `
         <div class="space-y-4 text-lg text-gray-700">
             <div class="p-4 bg-slate-100 rounded-lg">
                 <h4 class="font-bold text-gray-800">Call Opening & Tenure</h4>
@@ -118,19 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         </div>`;
     
-    const conversionTrackingContent = `
-         <div>
-            <h3 class="text-2xl font-bold text-gray-900 mb-2">Pitch for Conversion Tracking Setup</h3>
-            <div class="space-y-2 text-lg text-gray-600">
-                <p><strong>The "Why":</strong> "For us to optimize for anything beyond just clicks, the system needs to know what a 'conversion' is for your business. Without that data, Smart Bidding is like flying blind and we can't measure true performance."</p>
-                <p><strong>The "What":</strong> "I recommend we set up Google Ads Conversion Tracking properly. This involves placing a small snippet of code on your website's 'thank you' page. It's the system's eyes and ears."</p>
-                <p><strong>The "Impact":</strong> "Once this is set up, we unlock the full power of Google's AI. We can optimize for leads or sales directly, which will dramatically improve your results. It's the foundation for everything else."</p>
-                <p class="mt-4 font-semibold">"Do you agree that tracking these actions is the critical next step?"</p>
-            </div>
-        </div>
-    `;
-
-     const budgetContent = `
+    const budgetContent = `
          <div>
             <h3 class="text-2xl font-bold text-gray-900 mb-2">Pitch for Budget Adjustments</h3>
             <div class="space-y-2 text-lg text-gray-600">
@@ -241,9 +364,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const strategyGuideEl = document.getElementById('strategy-guide');
     const strategyTitleEl = document.getElementById('strategy-title');
     const strategySubtitleEl = document.getElementById('strategy-subtitle');
-    const standardContentEl = document.getElementById('standard-content');
-    const pitchContentEl = document.getElementById('pitch-content');
-    const conversionTrackingContentEl = document.getElementById('conversion_tracking-content');
     const budgetContentEl = document.getElementById('budget-content');
     const objectionsContentEl = document.getElementById('objections-content');
     const implementationContentEl = document.getElementById('implementation-content');
@@ -299,16 +419,16 @@ document.addEventListener('DOMContentLoaded', function() {
         strategySubtitleEl.textContent = data.subtitle;
         
         // Dynamically insert sale hook and transition text
-        standardContentEl.innerHTML = standardPitchContent;
+        document.getElementById('standard-content').innerHTML = standardPitchContent;
         document.getElementById('dynamic-sale-hook').textContent = data.saleHook;
         document.getElementById('dynamic-transition').textContent = data.transition;
         
-        pitchContentEl.innerHTML = data.gil + data.pitch;
-        conversionTrackingContentEl.innerHTML = conversionTrackingContent;
-        budgetContentEl.innerHTML = budgetContent;
-        objectionsContentEl.innerHTML = data.objections;
-        implementationContentEl.innerHTML = data.implementation;
-        closingContentEl.innerHTML = closingContent;
+        document.getElementById('pitch-content').innerHTML = data.gil + data.pitch;
+        document.getElementById('conversion_tracking-content').innerHTML = conversionTrackingContent;
+        document.getElementById('budget-content').innerHTML = budgetContent;
+        document.getElementById('objections-content').innerHTML = data.objections;
+        document.getElementById('implementation-content').innerHTML = data.implementation;
+        document.getElementById('closing-content').innerHTML = closingContent;
 
         strategyGuideEl.style.display = 'block';
         welcomeMessageEl.style.display = 'none';
