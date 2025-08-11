@@ -56,41 +56,23 @@
     <div id="quizPage" class="page fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50 backdrop-blur-md">
          <div class="w-full max-w-2xl p-8 space-y-6 bg-gray-800 bg-opacity-70 border border-gray-700 rounded-2xl shadow-lg animate-fade-in-up">
              <div class="text-center">
-                <h1 class="text-3xl font-extrabold text-white">Knowledge Check</h1>
-                <p class="mt-2 text-gray-400">Answer correctly to unlock the pitch tool.</p>
+                <h1 class="text-3xl font-extrabold text-white">Key Knowledge Check</h1>
+                <p class="mt-2 text-gray-400">Answer this one question correctly to unlock the pitch tool.</p>
             </div>
             <div id="quiz-container" class="space-y-6 text-gray-300">
-                <!-- Question 1 -->
+                <!-- Single Quiz Question -->
                 <div class="quiz-question">
-                    <p class="font-semibold text-lg text-white">1. Which bidding strategy is best suited for an e-commerce client whose primary goal is achieving a specific return on their ad spend?</p>
-                    <div class="mt-2 space-y-2">
-                        <label class="flex items-center"><input type="radio" name="q1" value="a" class="form-radio"> Maximize Clicks</label>
-                        <label class="flex items-center"><input type="radio" name="q1" value="b" class="form-radio"> Target CPA</label>
-                        <label class="flex items-center"><input type="radio" name="q1" value="c" class="form-radio"> Target ROAS</label>
-                    </div>
-                </div>
-                <!-- Question 2 -->
-                <div class="quiz-question">
-                    <p class="font-semibold text-lg text-white">2. A client wants their ads at the absolute top of the page 80% of the time. Which strategy should you pitch?</p>
-                     <div class="mt-2 space-y-2">
-                        <label class="flex items-center"><input type="radio" name="q2" value="a" class="form-radio"> Target Impression Share</label>
-                        <label class="flex items-center"><input type="radio" name="q2" value="b" class="form-radio"> Maximize Conversions</label>
-                        <label class="flex items-center"><input type="radio" name="q2" value="c" class="form-radio"> Manual CPC</label>
-                    </div>
-                </div>
-                 <!-- Question 3 -->
-                <div class="quiz-question">
-                    <p class="font-semibold text-lg text-white">3. What is the foundational prerequisite for almost all value-based Smart Bidding strategies?</p>
-                     <div class="mt-2 space-y-2">
-                        <label class="flex items-center"><input type="radio" name="q3" value="a" class="form-radio"> A high daily budget</label>
-                        <label class="flex items-center"><input type="radio" name="q3" value="b" class="form-radio"> Accurate Conversion Tracking</label>
-                        <label class="flex items-center"><input type="radio" name="q3" value="c" class="form-radio"> At least 5 ad groups</label>
+                    <p class="font-semibold text-lg text-white">What is the foundational prerequisite for almost all value-based Smart Bidding strategies?</p>
+                     <div class="mt-4 space-y-2">
+                        <label class="flex items-center p-3 rounded-lg border border-gray-700 hover:bg-gray-700 transition-colors"><input type="radio" name="key-question" value="a" class="form-radio"> A high daily budget</label>
+                        <label class="flex items-center p-3 rounded-lg border border-gray-700 hover:bg-gray-700 transition-colors"><input type="radio" name="key-question" value="b" class="form-radio"> Accurate Conversion Tracking</label>
+                        <label class="flex items-center p-3 rounded-lg border border-gray-700 hover:bg-gray-700 transition-colors"><input type="radio" name="key-question" value="c" class="form-radio"> At least 5 ad groups</label>
                     </div>
                 </div>
             </div>
              <p id="quiz-error" class="text-xs text-center text-red-400 h-4"></p>
             <button id="submitQuizButton" class="w-full btn btn-primary">
-                Submit Answers
+                Unlock Tool
             </button>
          </div>
     </div>
@@ -160,16 +142,6 @@
                 <main id="main-content" class="flex-1 overflow-x-hidden overflow-y-auto p-6 md:p-8 lg:p-12">
                      <!-- Content for each page will be loaded here dynamically -->
                 </main>
-                 <!-- Footer -->
-                <footer class="bg-gray-800 bg-opacity-50 text-gray-400 border-t border-gray-700 flex-shrink-0">
-                    <div class="container mx-auto px-6 py-3 flex flex-col sm:flex-row justify-between items-center text-xs">
-                        <p class="mb-2 sm:mb-0">&copy; 2025 PITCHify. For internal use only.</p>
-                        <div class="flex items-center">
-                            <span class="mr-2">Powered by</span>
-                            <img src="https://i.ibb.co/L5fKk9D/marketstar-logo-color.png" alt="MarketStar Logo" class="h-5 w-auto">
-                        </div>
-                    </div>
-                </footer>
             </div>
         </div>
     </div>
@@ -396,16 +368,8 @@
         </div>
     </template>
 
-
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-
-    <!-- IMPORTANT: Load script as a module -->
+    <!-- Firebase SDKs - Use modular imports -->
     <script type="module" src="script.js"></script>
-
 </body>
 </html>
-```
 
