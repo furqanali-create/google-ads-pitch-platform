@@ -5,7 +5,9 @@ import {
     createUserWithEmailAndPassword, 
     signInWithEmailAndPassword, 
     signOut, 
-    onAuthStateChanged 
+    onAuthStateChanged,
+    GoogleAuthProvider,
+    signInWithPopup
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 import { 
     getFirestore, 
@@ -38,6 +40,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const googleProvider = new GoogleAuthProvider();
 
 // --- Page Navigation & State Management ---
 const pages = document.querySelectorAll('.page');
@@ -272,6 +275,7 @@ appNavLinks.forEach(link => {
 // --- Authentication Logic ---
 const loginButton = document.getElementById('loginButton');
 const signupButton = document.getElementById('signupButton');
+const googleSignInButton = document.getElementById('googleSignInButton');
 const emailInput = document.getElementById('email');
 const passwordInput = document.getElementById('password');
 const usernameInput = document.getElementById('username');
@@ -286,7 +290,7 @@ function toggleAuthMode() {
     isLoginMode = !isLoginMode;
     authErrorEl.textContent = '';
     if (isLoginMode) {
-        authTitleEl.textContent = 'Account Manager Login';
+        authTitleEl.textContent = 'PITCHify';
         signupButton.style.display = 'none';
         loginButton.style.display = 'flex';
         usernameField.style.display = 'none';
@@ -342,6 +346,28 @@ loginButton.addEventListener('click', async () => {
         authErrorEl.textContent = error.message;
     }
 });
+
+googleSignInButton.addEventListener('click', async () => {
+    try {
+        const result = await signInWithPopup(auth, googleProvider);
+        const user = result.user;
+        
+        const userDocRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(userDocRef);
+
+        if (!docSnap.exists()) {
+            const role = user.email.includes('manager') ? 'manager' : 'rep';
+            await setDoc(userDocRef, {
+                username: user.displayName,
+                email: user.email,
+                role: role
+            });
+        }
+    } catch (error) {
+        authErrorEl.textContent = error.message;
+    }
+});
+
 
 logoutButton.addEventListener('click', async () => {
     await signOut(auth);
