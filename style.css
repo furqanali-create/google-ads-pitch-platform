@@ -1,0 +1,38 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f0f2f5; /* A slightly darker background */
+}
+.page { display: none; }
+.page.active { display: block; }
+.pitch-section { display: none; }
+.pitch-section.active { display: block; }
+.tab-button {
+    padding: 1rem 0.25rem;
+    border-bottom-width: 2px;
+    border-color: transparent;
+    font-weight: 500;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    color: #4b5563; /* gray-600 */
+    flex-shrink: 0;
+}
+.tab-button:hover {
+    color: #1f2937; /* gray-800 */
+    border-color: #d1d5db; /* gray-300 */
+}
+.tab-button.active {
+    border-bottom-color: #2563eb; /* blue-600 */
+    color: #1e3a8a; /* blue-800 */
+    font-weight: 600;
+}
+.stepper-item.active { background-color: #e0e7ff; border-left-color: #4f46e5; }
+.stepper-item.completed { background-color: #f0fdf4; border-left-color: #22c55e; }
+.stepper-item.completed .stepper-circle { background-color: #22c55e; color: white; }
+
+.app-page { display: none; }
+.app-page.active { display: block; }
+
+.app-nav-link.active {
+    color: #2563eb; /* blue-600 */
+    font-weight: 600;
+}
