@@ -267,18 +267,12 @@ async function handleSuggestionSubmit(e) {
 
 // --- App Initialization ---
 document.addEventListener('DOMContentLoaded', () => {
-    appNavLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            showAppPage(link.dataset.page);
-        });
-    });
-
     const loginButton = document.getElementById('loginButton');
     const signupButton = document.getElementById('signupButton');
     const googleSignInButton = document.getElementById('googleSignInButton');
     const toggleAuthModeEl = document.getElementById('toggle-auth-mode');
     const logoutButton = document.getElementById('logoutButton');
+    const submitQuizButton = document.getElementById('submitQuizButton');
 
     loginButton.addEventListener('click', handleLogin);
     signupButton.addEventListener('click', handleSignup);
@@ -288,6 +282,14 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleAuthMode();
     });
     logoutButton.addEventListener('click', handleLogout);
+    submitQuizButton.addEventListener('click', handleQuizSubmit);
+
+    appNavLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            showAppPage(link.dataset.page);
+        });
+    });
 
     onAuthStateChanged(auth, async (user) => {
         const managerLinks = document.querySelectorAll('.manager-only');
@@ -315,13 +317,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Initial UI setup
     toggleAuthMode(); // Sets the initial view to login
 });
 
 function handleLogin() {
-    const email = emailInput.value;
-    const password = passwordInput.value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
     signInWithEmailAndPassword(auth, email, password)
         .catch((error) => {
             document.getElementById('auth-error').textContent = error.message;
@@ -329,8 +330,8 @@ function handleLogin() {
 }
 
 async function handleSignup() {
-    const email = emailInput.value;
-    const password = passwordInput.value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
     const username = document.getElementById('username').value.trim();
     const authErrorEl = document.getElementById('auth-error');
 
@@ -353,7 +354,7 @@ async function handleSignup() {
         const role = email.includes('manager') ? 'manager' : 'rep';
         await setDoc(userRef, { username: username, email: email, role: role });
         
-        // After signup, take them directly to the main app, skipping the quiz gate as requested
+        // After signup, take them directly to the main app
         showPage('mainAppContainer');
         showAppPage('toolPage');
         
@@ -387,6 +388,64 @@ async function handleGoogleSignIn() {
 function handleLogout() {
     signOut(auth);
 }
+
+function toggleAuthMode() {
+    const authTitleEl = document.getElementById('auth-title');
+    const signupButton = document.getElementById('signupButton');
+    const loginButton = document.getElementById('loginButton');
+    const usernameField = document.getElementById('username-field');
+    const toggleAuthModeEl = document.getElementById('toggle-auth-mode');
+    const authErrorEl = document.getElementById('auth-error');
+
+    isLoginMode = !isLoginMode;
+    authErrorEl.textContent = '';
+    if (isLoginMode) {
+        authTitleEl.textContent = 'PITCHify';
+        signupButton.style.display = 'none';
+        loginButton.style.display = 'flex';
+        usernameField.style.display = 'none';
+        toggleAuthModeEl.textContent = 'Need to create an account? Sign Up';
+    } else {
+        authTitleEl.textContent = 'Create an Account';
+        signupButton.style.display = 'flex';
+        loginButton.style.display = 'none';
+        usernameField.style.display = 'block';
+        toggleAuthModeEl.textContent = 'Already have an account? Login';
+    }
+}
+
+// --- Quiz Logic (Now only on quiz retake page) ---
+// This part is simplified as it's no longer a gate
+function bindQuizRetakeEvents() {
+    // This is a placeholder for future quiz module logic
+}
+
+
+// --- Leaderboard Logic ---
+async function fetchLeaderboard() {
+    try {
+        const q = query(collection(db, "leaderboard"), orderBy("timestamp", "desc"), limit(10));
+        const querySnapshot = await getDocs(q);
+        let leaderboardHTML = `<div class="bg-gray-800 bg-opacity-50 border border-gray-700 p-8 rounded-xl shadow-lg"><h2 class="text-3xl font-extrabold text-white">Quiz Leaderboard</h2><p class="mt-2 text-gray-400">Users who have passed the knowledge check.</p><div class="flow-root mt-6"><div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8"><div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8"><table class="min-w-full divide-y divide-gray-700"><thead><tr><th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-white sm:pl-0">Rank</th><th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-white">Name</th><th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-white">Status</th><th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-white">Date</th></tr></thead><tbody class="divide-y divide-gray-800">`;
+        
+        let rank = 1;
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const date = data.timestamp ? data.timestamp.toDate().toLocaleDateString() : 'N/A';
+            leaderboardHTML += `<tr>
+                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-white sm:pl-0">${rank++}</td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-300">${data.name}</td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-green-400">${data.score}</td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-300">${date}</td>
+            </tr>`;
+        });
+        leaderboardHTML += `</tbody></table></div></div></div></div>`;
+        mainContentContainer.innerHTML = leaderboardHTML;
+    } catch (error) {
+        mainContentContainer.innerHTML = `<p class="text-center text-red-400">Error loading leaderboard.</p>`;
+    }
+}
+
 
 // --- Tool Data and Logic ---
 const standardPitchContent = `
@@ -625,15 +684,5 @@ function selectStrategy(strategyKey, selectedIndex) {
         }
     });
 }
-
-// Initial Load
-document.addEventListener('DOMContentLoaded', () => {
-    // This is now the primary entry point
-    onAuthStateChanged(auth, async (user) => {
-        if (!user) {
-            showPage('loginPage');
-        }
-    });
-});
 ```
 
