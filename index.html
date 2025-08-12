@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PITCHify - Google Ads Pitch & Training Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -162,10 +163,52 @@
         .btn-secondary:hover {
             background-color: #334155;
         }
+        
+        .quiz-success-animation {
+            animation: success-pop 0.5s ease-out forwards;
+        }
+
+        @keyframes success-pop {
+            0% { transform: scale(0.8); opacity: 0; }
+            80% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        #confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 9999;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            opacity: 0;
+            animation: confetti-fall 3s ease-out forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-10vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(110vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 
 <body class="text-gray-300 bg-gray-900">
+    <div id="confetti-container"></div>
 
     <!-- =========== Main Application Wrapper =========== -->
     <div id="mainAppContainer" class="page active">
@@ -368,13 +411,19 @@
                 <h1 class="text-3xl font-extrabold text-white">Key Knowledge Check</h1>
                 <p class="mt-2 text-gray-400">Test your knowledge with a quick question.</p>
             </div>
-            <div id="quiz-container" class="space-y-6 text-gray-300 mt-6">
+            <div id="quiz-container-main" class="space-y-6 text-gray-300 mt-6">
                 <!-- Question will be dynamically inserted here -->
             </div>
-             <p id="quiz-feedback" class="text-xs text-center h-4 mt-4"></p>
+             <p id="quiz-feedback-main" class="text-xs text-center h-4 mt-4"></p>
             <div class="flex gap-4 mt-6">
                  <button id="next-question-btn" class="w-full btn btn-secondary">Next Question</button>
                  <button id="submit-quiz-answer-btn" class="w-full btn btn-primary">Submit Answer</button>
+            </div>
+             <div id="success-animation-quiz" class="hidden text-center quiz-success-animation">
+                <svg class="mx-auto h-16 w-16 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p class="mt-2 text-lg font-semibold text-white">Congratulations!</p>
             </div>
          </div>
     </template>
@@ -618,27 +667,45 @@
             
             let currentQuestion = {};
             const quizQuestions = [
-                {
-                    question: "What is the foundational prerequisite for almost all value-based Smart Bidding strategies?",
-                    options: { a: "A high daily budget", b: "Accurate Conversion Tracking", c: "At least 5 ad groups" },
-                    correct: "b"
-                },
-                {
-                    question: "Which bidding strategy is best suited for an e-commerce client whose primary goal is achieving a specific return on their ad spend?",
-                    options: { a: "Maximize Clicks", b: "Target CPA", c: "Target ROAS" },
-                    correct: "c"
-                },
-                {
-                    question: "A client wants their ads at the absolute top of the page 80% of the time. Which strategy should you pitch?",
-                    options: { a: "Target Impression Share", b: "Maximize Conversions", c: "Manual CPC" },
-                    correct: "a"
-                }
+                // Bidding Strategies
+                { question: "What is the foundational prerequisite for almost all value-based Smart Bidding strategies?", options: { a: "A high daily budget", b: "Accurate Conversion Tracking", c: "At least 5 ad groups" }, correct: "b" },
+                { question: "Which bidding strategy is best suited for an e-commerce client whose primary goal is achieving a specific return on their ad spend?", options: { a: "Maximize Clicks", b: "Target CPA", c: "Target ROAS" }, correct: "c" },
+                { question: "A client wants their ads at the absolute top of the page 80% of the time. Which strategy should you pitch?", options: { a: "Target Impression Share", b: "Maximize Conversions", c: "Manual CPC" }, correct: "a" },
+                { question: "What does CPA stand for?", options: { a: "Cost Per Action", b: "Cost Per Audience", c: "Cost Per Attribution" }, correct: "a" },
+                { question: "Which bidding strategy does not require conversion tracking to function?", options: { a: "Target CPA", b: "Maximize Clicks", c: "Target ROAS" }, correct: "b" },
+                { question: "When would you recommend 'Maximize Conversions' over 'Target CPA'?", options: { a: "When the client has a strict cost-per-lead goal", b: "When the goal is to get as many conversions as possible within a budget", c: "When the client has a new account" }, correct: "b" },
+                { question: "A client is more concerned with profitability than the total number of sales. Which strategy should you recommend?", options: { a: "Maximize Conversions", b: "Target ROAS", c: "Maximize Clicks" }, correct: "b" },
+                { question: "What is a key difference between 'Maximize Conversions' and 'Maximize Conversion Value'?", options: { a: "One is for Search, one is for Display", b: "One focuses on the number of sales, the other on the revenue from sales", c: "There is no difference" }, correct: "b" },
+                { question: "What safety measure can you add to a 'Target Impression Share' bid strategy to control costs?", options: { a: "A maximum CPC bid limit", b: "A daily budget cap", c: "A negative keyword list" }, correct: "a" },
+                { question: "What does 'auction-time bidding' mean?", options: { a: "Bids are set once per day", b: "Bids are adjusted in real-time for every single auction", c: "You can only bid during certain hours" }, correct: "b" },
+                { question: "If a client wants to get ₹10 in revenue for every ₹2 spent on ads, what would their Target ROAS be?", options: { a: "20%", b: "500%", c: "50%" }, correct: "b" },
+                // Campaign Fundamentals
+                { question: "What are the three main components of Quality Score?", options: { a: "Bid, Budget, and Ad Rank", b: "CTR, Ad Relevance, and Landing Page Experience", c: "Clicks, Impressions, and Conversions" }, correct: "b" },
+                { question: "What is the difference between a keyword and a search term?", options: { a: "They are the same thing", b: "A keyword is what you bid on, a search term is what the user actually types", c: "A search term is what you bid on, a keyword is what the user types" }, correct: "b" },
+                { question: "Which keyword match type offers the most control over who sees your ad?", options: { a: "Broad Match", b: "Phrase Match", c: "Exact Match" }, correct: "c" },
+                { question: "What is the purpose of ad extensions?", options: { a: "To increase your daily budget", b: "To provide additional information and increase ad visibility", c: "To block competitors from showing ads" }, correct: "b" },
+                { question: "What is a Responsive Search Ad (RSA)?", options: { a: "An ad that only shows on mobile devices", b: "An ad that automatically tests different headlines and descriptions", c: "An ad that you can only pay for per conversion" }, correct: "b" },
+                { question: "What is a Performance Max campaign?", options: { a: "A campaign type that only runs on the Search Network", b: "A goal-based campaign that accesses all Google Ads inventory", c: "A manual campaign for experienced advertisers" }, correct: "b" },
+                { question: "What is remarketing?", options: { a: "Sending emails to past customers", b: "Showing ads to people who have previously interacted with your website or app", c: "Creating a new marketing plan" }, correct: "b" },
+                { question: "What is the Google Display Network (GDN)?", options: { a: "A network of search engine partner sites", b: "A collection of over 2 million websites, videos, and apps where your ads can appear", c: "Google's internal employee network" }, correct: "b" },
+                // Limited by Budget & Optimization
+                { question: "What does the 'Limited by Budget' status indicate?", options: { a: "Your ads are disapproved", b: "Your daily budget is lower than the recommended amount, causing you to miss potential impressions", c: "Your credit card has expired" }, correct: "b" },
+                { question: "What does 'Search lost IS (budget)' mean?", options: { a: "The percentage of time your ads weren't shown due to a low Ad Rank", b: "The percentage of impressions you lost because your budget was too low", c: "The number of clicks you lost" }, correct: "b" },
+                { question: "If a client cannot increase their budget, what is one way to address a 'Limited by Budget' campaign?", options: { a: "Add more broad match keywords", b: "Pause the campaign", c: "Improve Quality Score or use ad scheduling to focus on peak hours" }, correct: "c" },
+                { question: "How does a low budget affect the learning period for Smart Bidding?", options: { a: "It has no effect", b: "It can prolong the learning period because the system has less data to work with", c: "It speeds up the learning period" }, correct: "b" },
+                { question: "What is the primary purpose of the Performance Planner tool?", options: { a: "To design new ad creatives", b: "To forecast how budget changes might impact campaign performance", c: "To find new keywords" }, correct: "b" },
+                // Advanced Concepts
+                { question: "What is an attribution model?", options: { a: "A model for predicting your budget", b: "A rule or set of rules that determines how credit for sales and conversions is assigned to touchpoints", c: "A type of ad extension" }, correct: "b" },
+                { question: "What are audience signals in a Performance Max campaign?", options: { a: "The volume of your ad's sound", b: "Audiences you provide to help the AI learn faster who to target", c: "Signals sent when an ad is disapproved" }, correct: "b" },
+                { question: "What is the main benefit of a portfolio bid strategy?", options: { a: "It's the only way to use Target ROAS", b: "It allows you to apply one bidding strategy across multiple campaigns", c: "It automatically creates new campaigns" }, correct: "b" },
+                { question: "When should you use a seasonality adjustment?", options: { a: "Every Monday", b: "For long-term trends like the changing seasons", c: "For short, predictable events like a 3-day sale where you expect conversion rates to change significantly" }, correct: "c" },
+                { question: "What is the Optimization Score?", options: { a: "Your account's final grade", b: "An estimate of how well your Google Ads account is set to perform, with recommendations for improvement", c: "A score based on how much you spend" }, correct: "b" }
             ];
             
             function loadNewQuizQuestion() {
                 currentQuestion = quizQuestions[Math.floor(Math.random() * quizQuestions.length)];
-                const quizContainer = document.getElementById('quiz-container');
-                const quizFeedback = document.getElementById('quiz-feedback');
+                const quizContainer = document.getElementById('quiz-container-main');
+                const quizFeedback = document.getElementById('quiz-feedback-main');
 
                 if (quizContainer) {
                     quizContainer.innerHTML = `
@@ -655,18 +722,49 @@
                         </div>
                     `;
                 }
-                if (quizFeedback) quizFeedback.textContent = '';
+                if (quizFeedback) {
+                     quizFeedback.textContent = '';
+                     quizFeedback.classList.remove('text-green-400', 'text-red-400');
+                }
             }
 
             function handleQuizSubmit() {
                 const answer = document.querySelector('input[name="key-question"]:checked')?.value;
-                const quizFeedback = document.getElementById('quiz-feedback');
+                const quizFeedback = document.getElementById('quiz-feedback-main');
+                const successAnimation = document.getElementById('success-animation-quiz');
+                const submitButton = document.getElementById('submit-quiz-answer-btn');
 
                 if (answer) {
                     if (answer === currentQuestion.correct) {
-                        quizFeedback.textContent = 'Correct!';
-                        quizFeedback.classList.add('text-green-400');
-                        quizFeedback.classList.remove('text-red-400');
+                        quizFeedback.textContent = '';
+                        successAnimation.classList.remove('hidden');
+                        submitButton.disabled = true;
+                        
+                        // Play cheering sound
+                        const synth = new Tone.Synth().toDestination();
+                        synth.triggerAttackRelease("C4", "8n");
+                        synth.triggerAttackRelease("E4", "8n", "+0.1");
+                        synth.triggerAttackRelease("G4", "8n", "+0.2");
+
+                        // Confetti animation
+                        for (let i = 0; i < 50; i++) {
+                            const confetti = document.createElement('div');
+                            confetti.classList.add('confetti');
+                            const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#8bc34a', '#cddc39', '#ffeb3b', '#ffc107', '#ff9800', '#ff5722'];
+                            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                            confetti.style.left = Math.random() * 100 + 'vw';
+                            confetti.style.animationDelay = Math.random() * 2 + 's';
+                            document.getElementById('confetti-container').appendChild(confetti);
+                        }
+
+                        setTimeout(() => {
+                           successAnimation.classList.add('hidden');
+                           loadNewQuizQuestion(); 
+                           submitButton.disabled = false;
+                           // Clear confetti
+                           document.getElementById('confetti-container').innerHTML = '';
+                        }, 2500);
+
                     } else {
                         quizFeedback.textContent = 'Incorrect, try another question.';
                         quizFeedback.classList.add('text-red-400');
@@ -692,7 +790,7 @@
                 <div class="space-y-4 text-lg text-gray-300">
                     <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
                         <h4 class="font-bold text-white">Call Opening & Tenure</h4>
-                        <p>"Hello, my name is [Your Name]... I'm your dedicated accounts manager for the quarter."</p>
+                        <p id="dynamic-opening-tenure"></p>
                     </div>
                     <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
                         <h4 class="font-bold text-white">Sale Hook</h4>
@@ -700,11 +798,11 @@
                     </div>
                      <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
                         <h4 class="font-bold text-white">Disclaimer & Verification</h4>
-                        <p>"Before we proceed... (follow standard disclaimer and CID verification)."</p>
+                        <p>"Before we proceed, I would like to let you know that - This call may be recorded for training, quality and to improve Google’s services. Do you agree to have this call monitored or recorded? (Wait for 'Yes') Thank you. I’d like to inform you that the recording has started. Can you please log in to the account and verify the last 4 digits of your Customer ID?"</p>
                     </div>
                     <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
                         <h4 class="font-bold text-white">PBC+Agenda</h4>
-                        <p>"On today’s call, I’ll ask a few questions to understand your business... Sound good?"</p>
+                        <p>"On today’s call, I’ll ask a few questions to get a better understanding of your business. This will help me share relevant optimization tips that could support your growth. Sound good?"</p>
                     </div>
                      <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
                         <h4 class="font-bold text-white">Transition to Next Step</h4>
@@ -730,7 +828,7 @@
                     <div class="space-y-2 text-lg text-gray-400">
                         <p><strong>The "Why":</strong> "Smart Bidding needs enough data to learn. A limited budget is like sending a fishing boat out with only enough fuel to go 100 meters from shore—it can't reach the best fishing spots."</p>
                         <p><strong>The "What":</strong> "Based on your goal, the system recommends a daily budget of [Z]. This is designed to be competitive and allow the AI enough room to learn."</p>
-                        <p><strong>The "Impact":</strong> "By increasing the handcuffs from the AI, we remove the handcuffs from the AI, allowing it to learn faster and capture more profitable conversions."</p>
+                        <p><strong>The "Impact":</strong> "By increasing the budget, we remove the handcuffs from the AI, allowing it to learn faster and capture more profitable conversions."</p>
                          <p class="mt-4 font-semibold text-white">"Can we agree to set the budget at this recommended level to give the new strategy the best chance of success?"</p>
                     </div>
                 </div>
@@ -888,9 +986,7 @@
                     pinButton.classList.remove('text-amber-400');
                 }
                 
-                document.getElementById('standard-content').innerHTML = standardPitchContent;
-                document.getElementById('dynamic-sale-hook').textContent = data.saleHook;
-                document.getElementById('dynamic-transition').textContent = data.transition;
+                document.getElementById('standard-content').innerHTML = generateDynamicCallFlow(data);
                 
                 document.getElementById('pitch-content').innerHTML = data.gil + data.pitch;
                 document.getElementById('conversion_tracking-content').innerHTML = conversionTrackingContent;
@@ -925,10 +1021,59 @@
                 });
             }
             
+            function generateDynamicCallFlow(strategyData){
+                const openings = [
+                    `"Hello, my name is [Your Name]. Am I speaking with [Advertiser Name]? Glad I caught you at a good time!"`,
+                    `"Hi [Advertiser Name], this is [Your Name] calling from the Google Ads team. Is now a good time to talk for a few minutes?"`
+                ];
+                 const tenures = [
+                    `"I'm the dedicated accounts manager for your ads account for the entire quarter."`,
+                    `"I'll be your strategic partner from the Google Ads team for the next three months, focused on helping you grow."`
+                ];
+                 const hooks = [
+                    strategyData.saleHook,
+                    `"I was analyzing your account's performance and pinpointed a key area I believe we can significantly improve. It relates directly to how we can achieve your goal of [Client Goal]."`,
+                    `"While reviewing your recent campaign data, a specific trend stood out to me. I have a strategy in mind that could capitalize on this to boost your results."`
+                ];
+                 const transitions = [
+                    strategyData.transition,
+                    `"Based on our discussion about the importance of [Client's Key Goal], it's clear the next step is to align our strategy to achieve that. Let's start by looking at your conversion tracking."`,
+                    `"You've mentioned that [Client's Pain Point] is a key challenge. To address that directly, we need to first ensure we're measuring success correctly. Let's move to the 'Conv. Tracking' tab."`
+                ];
+                
+                const randomItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+                return `
+                    <div class="space-y-4 text-lg text-gray-300">
+                        <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
+                            <h4 class="font-bold text-white">Call Opening & Tenure</h4>
+                            <p>${randomItem(openings)} ${randomItem(tenures)}</p>
+                        </div>
+                        <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
+                            <h4 class="font-bold text-white">Sale Hook</h4>
+                            <p>${randomItem(hooks)}</p>
+                        </div>
+                         <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
+                            <h4 class="font-bold text-white">Disclaimer & Verification</h4>
+                            <p>"Before we proceed, I would like to let you know that - This call may be recorded for training, quality and to improve Google’s services. Do you agree to have this call monitored or recorded? (Wait for 'Yes') Thank you. I’d like to inform you that the recording has started. Can you please log in to the account and verify the last 4 digits of your Customer ID?"</p>
+                        </div>
+                        <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
+                            <h4 class="font-bold text-white">PBC+Agenda</h4>
+                            <p>"On today’s call, I’ll ask a few questions to get a better understanding of your business. This will help me share relevant optimization tips that could support your growth. Sound good?"</p>
+                        </div>
+                         <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
+                            <h4 class="font-bold text-white">Transition to Next Step</h4>
+                            <p>${randomItem(transitions)}</p>
+                        </div>
+                    </div>
+                `;
+            }
+
             // Initial Load
              showAppPage('toolPage');
         });
     </script>
 </body>
 </html>
+```
 
