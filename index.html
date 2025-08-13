@@ -210,8 +210,10 @@
 <body class="text-gray-300 bg-gray-900">
     <div id="confetti-container"></div>
 
+    <!-- =========== Main Application Wrapper =========== -->
     <div id="mainAppContainer" class="page active">
         <div class="flex h-screen bg-gray-900">
+            <!-- Sidebar -->
             <aside class="w-20 hover:w-64 transition-all duration-300 ease-in-out flex-shrink-0 bg-gray-800 bg-opacity-50 border-r border-gray-700 flex flex-col group">
                 <div class="h-20 flex-shrink-0 flex items-center justify-center px-4 border-b border-gray-700">
                      <a href="#" class="text-3xl font-bold text-white flex items-center">
@@ -251,22 +253,27 @@
                         <span class="nav-text">About</span>
                      </a>
                 </nav>
-                 <div class="p-4 mt-auto border-t border-gray-700">
-                     <div class="flex items-center justify-center">
-                         <img src="https://i.ibb.co/3k1wN7j/Screenshot-2025-08-13-7-34-05-PM.png" alt="MarketStar Logo" class="h-8 w-auto">
-                     </div>
-                 </div>
+                <div class="p-4 mt-auto border-t border-gray-700 h-20 flex items-center justify-center">
+                    <div class="flex flex-col items-center justify-center">
+                        <span class="text-[10px] text-gray-500 mb-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">POWERED BY</span>
+                        <img src="https://www.marketstar.com/hs-fs/hubfs/PrimaryLogo_2022_40.png" alt="MarketStar Logo" class="h-6 group-hover:h-5 transition-all">
+                    </div>
+                </div>
             </aside>
 
+            <!-- Main Content -->
             <div class="flex-1 flex flex-col overflow-hidden">
                 <main id="main-content" class="flex-1 overflow-x-hidden overflow-y-auto p-6 md:p-8 lg:p-12">
-                    </main>
+                    <!-- Content for each page will be loaded here dynamically -->
+                </main>
                 <footer id="page-footer" class="text-center p-4 text-xs text-gray-500 border-t border-gray-800 bg-slate-900">
-                    </footer>
+                    <!-- Quote will be injected here by JS -->
+                </footer>
             </div>
         </div>
     </div>
 
+    <!-- Templates for dynamic page content -->
     <template id="toolPageContent">
         <div class="space-y-8">
             <div id="pinned-strategies" class="bg-gray-800 bg-opacity-50 border border-gray-700 p-6 rounded-xl shadow-lg">
@@ -278,7 +285,8 @@
                 <h2 class="text-xl font-bold text-white mb-1">Pitching Funnel</h2>
                 <p class="text-gray-400 mb-6 text-sm">Select a card to view the pitch script.</p>
                 <div class="flex overflow-x-auto space-x-4 pb-4" id="stepper">
-                     </div>
+                     <!-- Stepper cards will be injected here -->
+                </div>
             </div>
             <div id="strategy-guide" class="bg-gray-800 bg-opacity-50 border border-gray-700 p-8 rounded-xl shadow-lg" style="display: none;">
                 <div class="flex justify-between items-start">
@@ -342,15 +350,18 @@
             <div class="mt-8">
                  <h3 class="text-xl font-bold text-white mb-4">Pitch Success by Strategy</h3>
                  <div class="space-y-4">
+                     <!-- tCPA -->
                      <div>
                          <div class="flex justify-between mb-1"><span class="text-base font-medium text-blue-400">Target CPA</span><span class="text-sm font-medium text-blue-400">72% Accepted</span></div>
                          <div class="w-full bg-gray-700 rounded-full h-2.5"><div class="bg-blue-500 h-2.5 rounded-full" style="width: 72%"></div></div>
                      </div>
-                      <div>
+                      <!-- tROAS -->
+                     <div>
                          <div class="flex justify-between mb-1"><span class="text-base font-medium text-green-400">Target ROAS</span><span class="text-sm font-medium text-green-400">85% Accepted</span></div>
                          <div class="w-full bg-gray-700 rounded-full h-2.5"><div class="bg-green-500 h-2.5 rounded-full" style="width: 85%"></div></div>
                      </div>
-                      <div>
+                      <!-- Max Conversions -->
+                     <div>
                          <div class="flex justify-between mb-1"><span class="text-base font-medium text-indigo-400">Maximize Conversions</span><span class="text-sm font-medium text-indigo-400">55% Accepted</span></div>
                          <div class="w-full bg-gray-700 rounded-full h-2.5"><div class="bg-indigo-500 h-2.5 rounded-full" style="width: 55%"></div></div>
                      </div>
@@ -379,7 +390,8 @@
     </template>
     
     <template id="leaderboardPageContent">
-        </template>
+        <!-- Content will be generated by JS -->
+    </template>
 
     <template id="suggestionsPageContent">
          <div class="bg-gray-800 bg-opacity-50 border border-gray-700 p-8 rounded-xl shadow-lg">
@@ -405,7 +417,8 @@
                 <p class="mt-2 text-gray-400">Test your knowledge with a quick question.</p>
             </div>
             <div id="quiz-container-main" class="space-y-6 text-gray-300 mt-6">
-                </div>
+                <!-- Question will be dynamically inserted here -->
+            </div>
              <p id="quiz-feedback-main" class="text-xs text-center h-4 mt-4"></p>
             <div class="flex gap-4 mt-6">
                  <button id="next-question-btn" class="w-full btn btn-secondary">Next Question</button>
@@ -427,8 +440,10 @@
                 <button id="add-client-btn" class="btn btn-primary">Add Client</button>
             </div>
             <div id="client-list" class="space-y-4">
-                </div>
-             <div id="client-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+                <!-- Client profiles will be loaded here -->
+            </div>
+             <!-- Add/Edit Client Modal -->
+            <div id="client-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
                 <div class="bg-gray-800 border border-gray-700 rounded-lg shadow-xl p-6 w-full max-w-lg space-y-4 animate-fade-in-up">
                     <h3 id="client-modal-title" class="text-xl font-bold text-white">Add New Client</h3>
                     <input id="client-id-input" type="hidden">
@@ -480,7 +495,7 @@
             const appNavLinks = document.querySelectorAll('.app-nav-link');
 
             const footerQuotes = {
-                toolPage: '"Bike loan, Car loan... Kaushik Bhai Cyclone" - Kaushik',
+                toolPage: '"Bike loan, Car loan... Kaushik Bhai Cyclone" - Stree',
                 clientsPage: '"Main apni favourite hoon!" - Jab We Met',
                 quizPage: '"Aap purush hi nahi, mahapurush hain!" - Andaz Apna Apna',
                 resourceLibraryPage: '"Itna sannata kyun hai bhai?" - Sholay',
