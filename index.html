@@ -204,6 +204,23 @@
                 opacity: 0;
             }
         }
+
+        #page-footer {
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .marquee-text {
+            display: inline-block;
+            animation: marquee-scroll 20s linear infinite;
+            padding-left: 100%;
+        }
+
+        @keyframes marquee-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
     </style>
 </head>
 
@@ -411,7 +428,7 @@
     </template>
     
     <template id="quizPageContent">
-        <div class="bg-gray-800 bg-opacity-50 border border-gray-700 p-8 rounded-xl shadow-lg">
+        <div class="bg-gray-800 bg-opacity-50 border border-gray-700 p-8 rounded-xl shadow-lg relative">
              <div class="text-center">
                 <h1 class="text-3xl font-extrabold text-white">Key Knowledge Check</h1>
                 <p class="mt-2 text-gray-400">Test your knowledge with a quick question.</p>
@@ -424,12 +441,20 @@
                  <button id="next-question-btn" class="w-full btn btn-secondary">Next Question</button>
                  <button id="submit-quiz-answer-btn" class="w-full btn btn-primary">Submit Answer</button>
             </div>
-             <div id="success-animation-quiz" class="hidden text-center quiz-success-animation">
-                <svg class="mx-auto h-16 w-16 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <p class="mt-2 text-lg font-semibold text-white">Congratulations!</p>
+            <div id="quiz-verdict-overlay" class="hidden absolute inset-0 bg-black bg-opacity-80 flex items-center justify-center flex-col p-4 rounded-xl">
+                <h2 id="quiz-verdict-text" class="text-5xl md:text-7xl font-black text-white text-center animate-ping-once" style="animation: ping-once 1s cubic-bezier(0, 0, 0.2, 1);"></h2>
             </div>
+            <style>
+                @keyframes ping-once {
+                    75%, 100% {
+                        transform: scale(1.1);
+                        opacity: 0.8;
+                    }
+                }
+                .animate-ping-once {
+                    animation: ping-once 1s cubic-bezier(0, 0, 0.2, 1);
+                }
+            </style>
         </div>
     </template>
     
@@ -475,14 +500,28 @@
                     <a href="https://support.google.com/google-ads/answer/7065882" target="_blank" class="font-medium text-blue-400 hover:underline">Read on Google Ads Help &rarr;</a>
                 </div>
                  <div class="p-4 border border-gray-700 rounded-lg hover:bg-gray-700 transition-colors">
-                    <h3 class="font-semibold text-lg text-white">Conversion Tracking</h3>
-                     <p class="text-sm text-gray-400 mb-2">Learn how to set up the foundational element for all value-based optimization.</p>
-                    <a href="https://support.google.com/google-ads/answer/1722054" target="_blank" class="font-medium text-blue-400 hover:underline">Read on Google Ads Help &rarr;</a>
-                </div>
-                <div class="p-4 border border-gray-700 rounded-lg hover:bg-gray-700 transition-colors">
                     <h3 class="font-semibold text-lg text-white">Performance Max Campaigns</h3>
                     <p class="text-sm text-gray-400 mb-2">Master Google's most powerful and comprehensive automated campaign type.</p>
                     <a href="https://support.google.com/google-ads/answer/10724817" target="_blank" class="font-medium text-blue-400 hover:underline">Read on Google Ads Help &rarr;</a>
+                </div>
+                <div class="p-6 border border-gray-700 rounded-lg hover:bg-gray-700 transition-colors">
+                    <h3 class="font-semibold text-lg text-white mb-2">How to Create a Conversion Action</h3>
+                    <p class="text-sm text-gray-400 mb-4">A step-by-step guide to setting up the most foundational element for optimization.</p>
+                    <ol class="list-decimal list-inside space-y-3 text-gray-300">
+                        <li><strong>Navigate to Measurement:</strong> In your Google Ads account, click the <code class="bg-gray-600 text-xs p-1 rounded">'Tools and settings'</code> wrench icon, then under 'Measurement', select <code class="bg-gray-600 text-xs p-1 rounded">'Conversions'</code>.</li>
+                        <li><strong>Start a New Action:</strong> Click the <code class="bg-gray-600 text-xs p-1 rounded">'+ New conversion action'</code> button.</li>
+                        <li><strong>Select a Source:</strong> Choose the source of your conversions. For most, this will be <code class="bg-gray-600 text-xs p-1 rounded">'Website'</code>. Enter your website domain to scan for the global site tag.</li>
+                        <li><strong>Configure the Action:</strong>
+                            <ul class="list-disc list-inside ml-4 mt-2 space-y-1 text-gray-400">
+                                <li><strong>Goal and action optimisation:</strong> Select the category that best fits your action (e.g., 'Submit lead form', 'Purchase').</li>
+                                <li><strong>Conversion name:</strong> Give it a clear name, like 'Contact Form Submission' or 'Ebook Download'.</li>
+                                <li><strong>Value:</strong> Assign a monetary value if applicable (essential for e-commerce), or select 'Don't use a value' for lead-gen.</li>
+                                <li><strong>Count:</strong> Choose <code class="bg-gray-600 text-xs p-1 rounded">'One'</code> for leads (to avoid counting one person filling out a form twice) and <code class="bg-gray-600 text-xs p-1 rounded">'Every'</code> for purchases.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Set Up the Tag:</strong> After creating the action, Google will provide a code snippet (tag). This needs to be installed on your website. The easiest way is using <code class="bg-gray-600 text-xs p-1 rounded">'Google Tag Manager'</code>, but you can also install it directly on the code of your 'thank you' or confirmation page.</li>
+                        <li><strong>Verify:</strong> Once the tag is installed, check the Conversions page in Google Ads. The status should change from 'Unverified' to 'Recording conversions' within a few hours of getting your first conversion.</li>
+                    </ol>
                 </div>
             </div>
         </div>
@@ -495,7 +534,7 @@
             const appNavLinks = document.querySelectorAll('.app-nav-link');
 
             const footerQuotes = {
-                toolPage: '"Bike loan... Car loan... Sushant Bhai Cyclone" - Kaushik',
+                toolPage: '"Bike loan, Car loan... Kaushik Bhai Cyclone" - Stree',
                 clientsPage: '"Main apni favourite hoon!" - Jab We Met',
                 quizPage: '"Aap purush hi nahi, mahapurush hain!" - Andaz Apna Apna',
                 resourceLibraryPage: '"Itna sannata kyun hai bhai?" - Sholay',
@@ -527,7 +566,7 @@
                     const footer = document.getElementById('page-footer');
                     if (footer) {
                         const quote = footerQuotes[pageId] || footerQuotes.default;
-                        footer.innerHTML = `🎬 <span class="italic">${quote}</span>`;
+                        footer.innerHTML = `<span class="marquee-text">🎬 &nbsp; ${quote}</span>`;
                     }
 
                     if(pageId === 'toolPage') bindToolEvents();
@@ -724,10 +763,12 @@
             ];
             
             function loadNewQuizQuestion() {
-                currentQuestion = quizQuestions[Math.floor(Math.random() * quizQuestions.length)];
                 const quizContainer = document.getElementById('quiz-container-main');
-                const quizFeedback = document.getElementById('quiz-feedback-main');
+                const nextButton = document.getElementById('next-question-btn');
+                const submitButton = document.getElementById('submit-quiz-answer-btn');
 
+                currentQuestion = quizQuestions[Math.floor(Math.random() * quizQuestions.length)];
+                
                 if (quizContainer) {
                     quizContainer.innerHTML = `
                         <div class="quiz-question">
@@ -743,58 +784,49 @@
                         </div>
                     `;
                 }
-                if (quizFeedback) {
-                     quizFeedback.textContent = '';
-                     quizFeedback.classList.remove('text-green-400', 'text-red-400');
-                }
+                document.getElementById('quiz-feedback-main').textContent = '';
+                nextButton.classList.remove('hidden');
+                submitButton.classList.remove('hidden');
+                submitButton.disabled = false;
             }
 
             function handleQuizSubmit() {
-                const answer = document.querySelector('input[name="key-question"]:checked')?.value;
-                const quizFeedback = document.getElementById('quiz-feedback-main');
-                const successAnimation = document.getElementById('success-animation-quiz');
+                const answer = document.querySelector('input[name="key-question"]:checked');
+                const verdictOverlay = document.getElementById('quiz-verdict-overlay');
+                const verdictText = document.getElementById('quiz-verdict-text');
+                const nextButton = document.getElementById('next-question-btn');
                 const submitButton = document.getElementById('submit-quiz-answer-btn');
-
+                
                 if (answer) {
-                    if (answer === currentQuestion.correct) {
-                        quizFeedback.textContent = '';
-                        successAnimation.classList.remove('hidden');
-                        submitButton.disabled = true;
+                    submitButton.disabled = true;
+                    verdictOverlay.classList.remove('hidden');
+
+                    if (answer.value === currentQuestion.correct) {
+                        verdictText.textContent = '7 CRORE!';
+                        verdictText.className = 'text-5xl md:text-7xl font-black text-center animate-ping-once text-green-400';
                         
-                        // Play cheering sound
-                        const synth = new Tone.Synth().toDestination();
-                        synth.triggerAttackRelease("C4", "8n");
-                        synth.triggerAttackRelease("E4", "8n", "+0.1");
-                        synth.triggerAttackRelease("G4", "8n", "+0.2");
-
-                        // Confetti animation
-                        for (let i = 0; i < 50; i++) {
-                            const confetti = document.createElement('div');
-                            confetti.classList.add('confetti');
-                            const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#8bc34a', '#cddc39', '#ffeb3b', '#ffc107', '#ff9800', '#ff5722'];
-                            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                            confetti.style.left = Math.random() * 100 + 'vw';
-                            confetti.style.animationDelay = Math.random() * 2 + 's';
-                            document.getElementById('confetti-container').appendChild(confetti);
-                        }
-
-                        setTimeout(() => {
-                            successAnimation.classList.add('hidden');
-                            loadNewQuizQuestion(); 
-                            submitButton.disabled = false;
-                            // Clear confetti
-                            document.getElementById('confetti-container').innerHTML = '';
-                        }, 2500);
+                        const synth = new Tone.PolySynth(Tone.Synth).toDestination();
+                        const now = Tone.now();
+                        synth.triggerAttackRelease(["C4", "E4", "G4", "C5"], "0.5s", now);
+                        synth.triggerAttackRelease(["E5", "G5", "C6"], "0.4s", now + 0.5);
 
                     } else {
-                        quizFeedback.textContent = 'Incorrect, try another question.';
-                        quizFeedback.classList.add('text-red-400');
-                        quizFeedback.classList.remove('text-green-400');
+                        verdictText.textContent = 'GALAT JAWAAB';
+                        verdictText.className = 'text-5xl md:text-7xl font-black text-center animate-ping-once text-red-500';
+                        
+                        const synth = new Tone.Synth().toDestination();
+                        const now = Tone.now();
+                        synth.triggerAttackRelease("A3", "8n", now);
+                        synth.triggerAttackRelease("E3", "8n", now + 0.2);
                     }
+
+                    setTimeout(() => {
+                        verdictOverlay.classList.add('hidden');
+                        loadNewQuizQuestion();
+                    }, 2500);
+
                 } else {
-                    quizFeedback.textContent = 'Please select an answer.';
-                    quizFeedback.classList.add('text-red-400');
-                    quizFeedback.classList.remove('text-green-400');
+                    document.getElementById('quiz-feedback-main').textContent = 'Please select an answer.';
                 }
             }
 
@@ -809,27 +841,45 @@
             // --- Tool Data and Logic ---
 
             const conversionTrackingContent = `
-                 <div>
-                     <h3 class="text-2xl font-bold text-white mb-2">Pitch for Conversion Tracking Setup</h3>
-                     <div class="space-y-2 text-lg text-gray-400">
-                         <p><strong>The "Why":</strong> "For us to optimize for anything beyond clicks, the system needs to know what a 'conversion' is. Without that data, Smart Bidding is like flying blind."</p>
-                         <p><strong>The "What":</strong> "I recommend we set up Conversion Tracking. This involves placing a small code snippet on your 'thank you' page. It's the system's eyes and ears."</p>
-                         <p><strong>The "Impact":</strong> "Once set up, we unlock the full power of Google's AI to optimize for leads or sales directly, which will dramatically improve your results."</p>
-                         <p class="mt-4 font-semibold text-white">"Do you agree that tracking these actions is the critical next step?"</p>
-                     </div>
-                 </div>
+                <div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Pitching Conversion Tracking: Tailor to the Client's Goal</h3>
+                    <p class="text-gray-400 mb-6">Conversion tracking is the foundation of any successful campaign. Without it, we're just buying clicks. Frame the conversation around the specific actions that create value for *their* business.</p>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
+                            <h4 class="font-semibold text-white text-lg">Example 1: For a Lead-Gen Client (e.g., Plumber, Lawyer)</h4>
+                            <p class="text-lg text-gray-300 mt-2">"Right now, we're measuring success by how many people visit your site. But not every visitor becomes a customer, right? The real goal is to get your phone to ring or to have someone fill out your 'Request a Quote' form. By placing a small piece of code on your site, we can teach Google what those valuable actions are. This lets the AI stop hunting for just clicks, and start hunting for actual, high-intent customers for you. Does that sound like a better way to measure success?"</p>
+                        </div>
+                        <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
+                            <h4 class="font-semibold text-white text-lg">Example 2: For an E-commerce Client (e.g., Online Store)</h4>
+                            <p class="text-lg text-gray-300 mt-2">"We're driving a lot of traffic to your product pages, which is great. The next evolution is to focus on the end goal: sales. We can track not just who buys, but also *how much* they spend. Imagine if Google's AI could tell the difference between a window shopper and someone likely to buy three of your premium products. By setting up purchase tracking, we give it that intelligence. The system then learns to prioritize users who are more likely to make larger purchases, maximizing your total revenue. Can we agree that focusing on revenue, not just traffic, is the key to profitability?"</p>
+                        </div>
+                        <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
+                            <h4 class="font-semibold text-white text-lg">Example 3: For a Local Business (e.g., Restaurant, Salon)</h4>
+                            <p class="text-lg text-gray-300 mt-2">"For a business like yours, a website visit is just the first step. The real win is when a customer decides to come to your location. We can actually track how many people click the 'Get Directions' button on your ads or the 'Call' button from their mobile phone. This tells us exactly which ads are driving real-world actions and bringing customers to your door. This is far more powerful than just counting clicks, as it measures actual intent to visit. Would you agree that tracking calls and direction requests is a better measure of our success?"</p>
+                        </div>
+                    </div>
+                </div>
             `;
 
              const budgetContent = `
-                 <div>
-                     <h3 class="text-2xl font-bold text-white mb-2">Pitch for Budget Adjustments</h3>
-                     <div class="space-y-2 text-lg text-gray-400">
-                         <p><strong>The "Why":</strong> "Smart Bidding needs enough data to learn. A limited budget is like sending a fishing boat out with only enough fuel to go 100 meters from shore—it can't reach the best fishing spots."</p>
-                         <p><strong>The "What":</strong> "Based on your goal, the system recommends a daily budget of [Z]. This is designed to be competitive and allow the AI enough room to learn."</p>
-                         <p><strong>The "Impact":</strong> "By increasing the budget, we remove the handcuffs from the AI, allowing it to learn faster and capture more profitable conversions."</p>
-                          <p class="mt-4 font-semibold text-white">"Can we agree to set the budget at this recommended level to give the new strategy the best chance of success?"</p>
-                     </div>
-                 </div>
+                <div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Pitching Budget Adjustments: Address the Situation</h3>
+                    <p class="text-gray-400 mb-6">A budget conversation is often sensitive. Frame it around opportunity and removing limitations, not just spending more money. Use the account's data to justify the recommendation.</p>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
+                            <h4 class="font-semibold text-white text-lg">Scenario 1: Campaign is "Limited by Budget"</h4>
+                            <p class="text-lg text-gray-300 mt-2">"I'm looking at your campaign, and Google is giving us a clear signal. The 'Limited by Budget' status means your campaign is performing so well that it's running out of its daily budget before the day is over. This is actually a good problem to have—it means there are more customers out there we could be reaching. The data shows we're missing out on an estimated [X]% of potential impressions from qualified customers. By increasing the budget, we're not just spending more; we're capturing the full demand that already exists for your services. Can we approve an increase to ensure we're not leaving money on the table?"</p>
+                        </div>
+                        <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
+                            <h4 class="font-semibold text-white text-lg">Scenario 2: Fueling a New Smart Bidding Strategy</h4>
+                            <p class="text-lg text-gray-300 mt-2">"As we switch to [Target CPA/ROAS], the system enters a 'learning phase'. Think of it like a new employee; it needs time and resources to learn what a good lead looks like for you. If the budget is too tight, it's like asking that new employee to learn the job while working only one hour a day—it will take a very long time. By setting a competitive budget for the first 2-3 weeks, we give the AI enough data to learn quickly and efficiently. After it's learned, we can re-evaluate, but this initial investment is key to unlocking its full potential faster. Are you on board with giving the system the fuel it needs to succeed?"</p>
+                        </div>
+                        <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
+                            <h4 class="font-semibold text-white text-lg">Scenario 3: Increasing Impression Share vs. Competitors</h4>
+                            <p class="text-lg text-gray-300 mt-2">"I was analyzing the auction insights, and I see that your main competitor, [Competitor Name], is showing up above you [X]% of the time. We have a higher-quality ad, but their more aggressive budget is allowing them to capture more visibility. To establish your brand as the market leader, we need to be more present in these critical auctions. A budget increase here is a strategic move to directly challenge your competition and capture more market share. It's an investment in brand dominance. Shall we adjust the budget to be more competitive?"</p>
+                        </div>
+                    </div>
+                </div>
             `;
 
             const closingContent = `
@@ -1096,3 +1146,5 @@
     </script>
 </body>
 </html>
+```
+
