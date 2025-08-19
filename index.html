@@ -82,10 +82,6 @@
             box-shadow: 0 10px 20px rgba(0,0,0,0.2), 0 0 20px rgba(96, 165, 250, 0.2);
         }
 
-        .stepper-card:hover:before {
-            opacity: 1;
-        }
-
         .stepper-card.active {
             border-color: #60a5fa; /* blue-400 */
             box-shadow: 0 0 25px rgba(96, 165, 250, 0.3);
@@ -226,23 +222,22 @@
 
 <body class="text-gray-300 bg-gray-900">
     <div id="confetti-container"></div>
+    <audio id="7-crore-audio" src="data:audio/mpeg;base64,loremipsum..."></audio>
 
-    <!-- =========== Main Application Wrapper =========== -->
     <div id="mainAppContainer" class="page active">
         <div class="flex h-screen bg-gray-900">
-            <!-- Sidebar -->
             <aside class="w-20 hover:w-64 transition-all duration-300 ease-in-out flex-shrink-0 bg-gray-800 bg-opacity-50 border-r border-gray-700 flex flex-col group">
                 <div class="h-20 flex-shrink-0 flex items-center justify-center px-4 border-b border-gray-700">
-                     <a href="#" class="text-3xl font-bold text-white flex items-center">
-                         <svg class="h-8 w-8 group-hover:mr-2 transition-all duration-300" viewBox="0 0 24 24">
-                             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                             <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                             <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
-                             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                             <path fill="none" d="M1 1h22v22H1z"/>
-                         </svg>
-                         <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200">PITCHify</span>
-                     </a>
+                       <a href="#" class="text-3xl font-bold text-white flex items-center">
+                           <svg class="h-8 w-8 group-hover:mr-2 transition-all duration-300" viewBox="0 0 24 24">
+                                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                 <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+                                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                                 <path fill="none" d="M1 1h22v22H1z"/>
+                           </svg>
+                           <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200">PITCHify</span>
+                       </a>
                 </div>
                 <nav class="flex-1 overflow-y-auto p-4 space-y-2">
                     <a href="#" class="app-nav-link active" data-page="toolPage">
@@ -253,22 +248,22 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                         <span class="nav-text">Clients</span>
                     </a>
-                     <a href="#" class="app-nav-link" data-page="quizPage">
-                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        <span class="nav-text">Test Knowledge</span>
-                     </a>
-                     <a href="#" class="app-nav-link" data-page="resourceLibraryPage">
-                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
-                        <span class="nav-text">Resource Library</span>
-                     </a>
-                     <a href="#" class="app-nav-link" data-page="suggestionsPage">
-                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                        <span class="nav-text">Suggestions</span>
-                     </a>
-                     <a href="#" class="app-nav-link" data-page="aboutPage">
-                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        <span class="nav-text">About</span>
-                     </a>
+                       <a href="#" class="app-nav-link" data-page="quizPage">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                           <span class="nav-text">Test Knowledge</span>
+                       </a>
+                       <a href="#" class="app-nav-link" data-page="resourceLibraryPage">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                           <span class="nav-text">Resource Library</span>
+                       </a>
+                       <a href="#" class="app-nav-link" data-page="suggestionsPage">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                           <span class="nav-text">Suggestions</span>
+                       </a>
+                       <a href="#" class="app-nav-link" data-page="aboutPage">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                           <span class="nav-text">About</span>
+                       </a>
                 </nav>
                 <div class="p-4 mt-auto border-t border-gray-700 h-20 flex items-center justify-center">
                     <div class="flex flex-col items-center justify-center">
@@ -278,19 +273,15 @@
                 </div>
             </aside>
 
-            <!-- Main Content -->
             <div class="flex-1 flex flex-col overflow-hidden">
                 <main id="main-content" class="flex-1 overflow-x-hidden overflow-y-auto p-6 md:p-8 lg:p-12">
-                    <!-- Content for each page will be loaded here dynamically -->
-                </main>
+                    </main>
                 <footer id="page-footer" class="text-center p-4 text-xs text-gray-500 border-t border-gray-800 bg-slate-900">
-                    <!-- Quote will be injected here by JS -->
-                </footer>
+                    </footer>
             </div>
         </div>
     </div>
 
-    <!-- Templates for dynamic page content -->
     <template id="toolPageContent">
         <div class="space-y-8">
             <div id="pinned-strategies" class="bg-gray-800 bg-opacity-50 border border-gray-700 p-6 rounded-xl shadow-lg">
@@ -302,8 +293,7 @@
                 <h2 class="text-xl font-bold text-white mb-1">Pitching Funnel</h2>
                 <p class="text-gray-400 mb-6 text-sm">Select a card to view the pitch script.</p>
                 <div class="flex overflow-x-auto space-x-4 pb-4" id="stepper">
-                     <!-- Stepper cards will be injected here -->
-                </div>
+                       </div>
             </div>
             <div id="strategy-guide" class="bg-gray-800 bg-opacity-50 border border-gray-700 p-8 rounded-xl shadow-lg" style="display: none;">
                 <div class="flex justify-between items-start">
@@ -312,7 +302,7 @@
                         <p id="strategy-subtitle" class="text-gray-400 mt-1"></p>
                     </div>
                     <button id="pin-strategy-btn" title="Pin this strategy" class="p-2 rounded-full hover:bg-gray-700 text-gray-400 hover:text-amber-400 transition-colors">
-                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.364 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.364-1.118L2.98 9.82c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.364 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.364-1.118L2.98 9.82c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>
                     </button>
                 </div>
                 <div class="mt-6 border-b border-gray-700">
@@ -327,22 +317,22 @@
                         <button class="tab-button" data-tab="closing">Closing</button>
                     </nav>
                 </div>
-                 <div class="mt-8">
-                    <div id="standard-content" class="pitch-section active"></div>
-                    <div id="conversion_tracking-content" class="pitch-section"></div>
-                    <div id="pitch-content" class="pitch-section"></div>
-                    <div id="budget-content" class="pitch-section"></div>
-                    <div id="objections-content" class="pitch-section"></div>
-                    <div id="implementation-content" class="pitch-section"></div>
-                    <div id="monitoring-content" class="pitch-section"></div>
-                    <div id="closing-content" class="pitch-section"></div>
-                </div>
+                   <div class="mt-8">
+                       <div id="standard-content" class="pitch-section active"></div>
+                       <div id="conversion_tracking-content" class="pitch-section"></div>
+                       <div id="pitch-content" class="pitch-section"></div>
+                       <div id="budget-content" class="pitch-section"></div>
+                       <div id="objections-content" class="pitch-section"></div>
+                       <div id="implementation-content" class="pitch-section"></div>
+                       <div id="monitoring-content" class="pitch-section"></div>
+                       <div id="closing-content" class="pitch-section"></div>
+                   </div>
             </div>
-             <div id="welcome-message" class="text-center p-12 bg-gray-800 bg-opacity-50 border border-gray-700 rounded-xl shadow-lg">
-                 <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-16 w-16 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 12L3 12m4 4L7 8m10 8V4m0 12l4-4m-4 4l-4-8" /></svg>
-                <h3 class="mt-4 text-xl font-semibold text-white">Select a Pitching Stage</h3>
-                <p class="mt-1 text-gray-400">Choose a card from the funnel above to get started.</p>
-            </div>
+               <div id="welcome-message" class="text-center p-12 bg-gray-800 bg-opacity-50 border border-gray-700 rounded-xl shadow-lg">
+                   <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-16 w-16 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 12L3 12m4 4L7 8m10 8V4m0 12l4-4m-4 4l-4-8" /></svg>
+                   <h3 class="mt-4 text-xl font-semibold text-white">Select a Pitching Stage</h3>
+                   <p class="mt-1 text-gray-400">Choose a card from the funnel above to get started.</p>
+               </div>
         </div>
     </template>
     
@@ -365,31 +355,28 @@
                 </div>
             </div>
             <div class="mt-8">
-                 <h3 class="text-xl font-bold text-white mb-4">Pitch Success by Strategy</h3>
-                 <div class="space-y-4">
-                     <!-- tCPA -->
-                     <div>
-                         <div class="flex justify-between mb-1"><span class="text-base font-medium text-blue-400">Target CPA</span><span class="text-sm font-medium text-blue-400">72% Accepted</span></div>
-                         <div class="w-full bg-gray-700 rounded-full h-2.5"><div class="bg-blue-500 h-2.5 rounded-full" style="width: 72%"></div></div>
-                     </div>
-                      <!-- tROAS -->
-                     <div>
-                         <div class="flex justify-between mb-1"><span class="text-base font-medium text-green-400">Target ROAS</span><span class="text-sm font-medium text-green-400">85% Accepted</span></div>
-                         <div class="w-full bg-gray-700 rounded-full h-2.5"><div class="bg-green-500 h-2.5 rounded-full" style="width: 85%"></div></div>
-                     </div>
-                      <!-- Max Conversions -->
-                     <div>
-                         <div class="flex justify-between mb-1"><span class="text-base font-medium text-indigo-400">Maximize Conversions</span><span class="text-sm font-medium text-indigo-400">55% Accepted</span></div>
-                         <div class="w-full bg-gray-700 rounded-full h-2.5"><div class="bg-indigo-500 h-2.5 rounded-full" style="width: 55%"></div></div>
-                     </div>
-                 </div>
+                   <h3 class="text-xl font-bold text-white mb-4">Pitch Success by Strategy</h3>
+                   <div class="space-y-4">
+                       <div>
+                           <div class="flex justify-between mb-1"><span class="text-base font-medium text-blue-400">Target CPA</span><span class="text-sm font-medium text-blue-400">72% Accepted</span></div>
+                           <div class="w-full bg-gray-700 rounded-full h-2.5"><div class="bg-blue-500 h-2.5 rounded-full" style="width: 72%"></div></div>
+                       </div>
+                        <div>
+                           <div class="flex justify-between mb-1"><span class="text-base font-medium text-green-400">Target ROAS</span><span class="text-sm font-medium text-green-400">85% Accepted</span></div>
+                           <div class="w-full bg-gray-700 rounded-full h-2.5"><div class="bg-green-500 h-2.5 rounded-full" style="width: 85%"></div></div>
+                       </div>
+                        <div>
+                           <div class="flex justify-between mb-1"><span class="text-base font-medium text-indigo-400">Maximize Conversions</span><span class="text-sm font-medium text-indigo-400">55% Accepted</span></div>
+                           <div class="w-full bg-gray-700 rounded-full h-2.5"><div class="bg-indigo-500 h-2.5 rounded-full" style="width: 55%"></div></div>
+                       </div>
+                   </div>
             </div>
         </div>
     </template>
 
     <template id="aboutPageContent">
         <div class="bg-gray-800 bg-opacity-50 border border-gray-700 p-8 rounded-xl shadow-lg">
-             <h2 class="text-3xl font-extrabold text-white">About PITCHify</h2>
+               <h2 class="text-3xl font-extrabold text-white">About PITCHify</h2>
             <div class="mt-4 text-lg text-gray-400 space-y-4">
                 <p>This tool is designed to empower Google Ads Account Managers at MarketStar with a structured, effective, and consistent framework for client conversations.</p>
                 <p>The goal is to move beyond simple recommendations and guide clients through a logical journey of optimization, starting with foundational elements like conversion tracking, progressing through the strategic selection of a bidding strategy, and addressing crucial topics like budget and potential objections.</p>
@@ -407,19 +394,18 @@
     </template>
     
     <template id="leaderboardPageContent">
-        <!-- Content will be generated by JS -->
-    </template>
+        </template>
 
     <template id="suggestionsPageContent">
-         <div class="bg-gray-800 bg-opacity-50 border border-gray-700 p-8 rounded-xl shadow-lg">
+           <div class="bg-gray-800 bg-opacity-50 border border-gray-700 p-8 rounded-xl shadow-lg">
             <h2 class="text-3xl font-extrabold text-white">Suggestion Box</h2>
             <p class="mt-2 text-gray-400">Have an idea to improve this tool? We'd love to hear it!</p>
             <form id="suggestionForm" class="mt-6 space-y-4">
                 <div>
-                     <label for="suggestionText" class="block text-sm font-medium text-gray-300">Your Suggestion</label>
-                     <textarea id="suggestionText" name="suggestionText" rows="4" required class="mt-1 form-input"></textarea>
+                       <label for="suggestionText" class="block text-sm font-medium text-gray-300">Your Suggestion</label>
+                       <textarea id="suggestionText" name="suggestionText" rows="4" required class="mt-1 form-input"></textarea>
                 </div>
-                 <p id="suggestion-success" class="text-xs text-center text-green-400 h-4"></p>
+                   <p id="suggestion-success" class="text-xs text-center text-green-400 h-4"></p>
                 <div>
                     <button type="submit" class="btn btn-primary">Submit Suggestion</button>
                 </div>
@@ -429,17 +415,16 @@
     
     <template id="quizPageContent">
         <div class="bg-gray-800 bg-opacity-50 border border-gray-700 p-8 rounded-xl shadow-lg relative">
-             <div class="text-center">
+               <div class="text-center">
                 <h1 class="text-3xl font-extrabold text-white">Key Knowledge Check</h1>
                 <p class="mt-2 text-gray-400">Test your knowledge with a quick question.</p>
             </div>
             <div id="quiz-container-main" class="space-y-6 text-gray-300 mt-6">
-                <!-- Question will be dynamically inserted here -->
-            </div>
-             <p id="quiz-feedback-main" class="text-xs text-center h-4 mt-4"></p>
+                </div>
+               <p id="quiz-feedback-main" class="text-xs text-center h-4 mt-4"></p>
             <div class="flex gap-4 mt-6">
-                 <button id="next-question-btn" class="w-full btn btn-secondary">Next Question</button>
-                 <button id="submit-quiz-answer-btn" class="w-full btn btn-primary">Submit Answer</button>
+                   <button id="next-question-btn" class="w-full btn btn-secondary">Next Question</button>
+                   <button id="submit-quiz-answer-btn" class="w-full btn btn-primary">Submit Answer</button>
             </div>
             <div id="quiz-verdict-overlay" class="hidden absolute inset-0 bg-black bg-opacity-80 flex items-center justify-center flex-col p-4 rounded-xl">
                 <h2 id="quiz-verdict-text" class="text-5xl md:text-7xl font-black text-white text-center animate-ping-once" style="animation: ping-once 1s cubic-bezier(0, 0, 0.2, 1);"></h2>
@@ -455,75 +440,6 @@
                     animation: ping-once 1s cubic-bezier(0, 0, 0.2, 1);
                 }
             </style>
-        </div>
-    </template>
-    
-    <template id="clientsPageContent">
-        <div class="bg-gray-800 bg-opacity-50 border border-gray-700 p-8 rounded-xl shadow-lg">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-3xl font-extrabold text-white">Client Profiles</h2>
-                <button id="add-client-btn" class="btn btn-primary">Add Client</button>
-            </div>
-            <div id="client-list" class="space-y-4">
-                <!-- Client profiles will be loaded here -->
-            </div>
-             <!-- Add/Edit Client Modal -->
-            <div id="client-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-                <div class="bg-gray-800 border border-gray-700 rounded-lg shadow-xl p-6 w-full max-w-lg space-y-4 animate-fade-in-up">
-                    <h3 id="client-modal-title" class="text-xl font-bold text-white">Add New Client</h3>
-                    <input id="client-id-input" type="hidden">
-                    <div>
-                        <label for="client-name" class="block text-sm font-medium text-gray-300">Client Name</label>
-                        <input type="text" id="client-name" class="mt-1 form-input">
-                    </div>
-                    <div>
-                        <label for="client-notes" class="block text-sm font-medium text-gray-300">Call Notes</label>
-                        <textarea id="client-notes" rows="4" class="mt-1 form-input"></textarea>
-                    </div>
-                    <div class="flex justify-end space-x-3">
-                        <button id="cancel-client-btn" class="btn btn-secondary">Cancel</button>
-                        <button id="save-client-btn" class="btn btn-primary">Save Client</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </template>
-    
-    <template id="resourceLibraryPageContent">
-         <div class="bg-gray-800 bg-opacity-50 border border-gray-700 p-8 rounded-xl shadow-lg">
-            <h2 class="text-3xl font-extrabold text-white">Resource Library</h2>
-            <p class="mt-2 text-gray-400">Quick links to essential guides and best practices.</p>
-            <div class="mt-6 space-y-4">
-                <div class="p-4 border border-gray-700 rounded-lg hover:bg-gray-700 transition-colors">
-                    <h3 class="font-semibold text-lg text-white">Smart Bidding</h3>
-                    <p class="text-sm text-gray-400 mb-2">The official guide to Google's automated, conversion-focused bid strategies.</p>
-                    <a href="https://support.google.com/google-ads/answer/7065882" target="_blank" class="font-medium text-blue-400 hover:underline">Read on Google Ads Help &rarr;</a>
-                </div>
-                 <div class="p-4 border border-gray-700 rounded-lg hover:bg-gray-700 transition-colors">
-                    <h3 class="font-semibold text-lg text-white">Performance Max Campaigns</h3>
-                    <p class="text-sm text-gray-400 mb-2">Master Google's most powerful and comprehensive automated campaign type.</p>
-                    <a href="https://support.google.com/google-ads/answer/10724817" target="_blank" class="font-medium text-blue-400 hover:underline">Read on Google Ads Help &rarr;</a>
-                </div>
-                <div class="p-6 border border-gray-700 rounded-lg hover:bg-gray-700 transition-colors">
-                    <h3 class="font-semibold text-lg text-white mb-2">How to Create a Conversion Action</h3>
-                    <p class="text-sm text-gray-400 mb-4">A step-by-step guide to setting up the most foundational element for optimization.</p>
-                    <ol class="list-decimal list-inside space-y-3 text-gray-300">
-                        <li><strong>Navigate to Measurement:</strong> In your Google Ads account, click the <code class="bg-gray-600 text-xs p-1 rounded">'Tools and settings'</code> wrench icon, then under 'Measurement', select <code class="bg-gray-600 text-xs p-1 rounded">'Conversions'</code>.</li>
-                        <li><strong>Start a New Action:</strong> Click the <code class="bg-gray-600 text-xs p-1 rounded">'+ New conversion action'</code> button.</li>
-                        <li><strong>Select a Source:</strong> Choose the source of your conversions. For most, this will be <code class="bg-gray-600 text-xs p-1 rounded">'Website'</code>. Enter your website domain to scan for the global site tag.</li>
-                        <li><strong>Configure the Action:</strong>
-                            <ul class="list-disc list-inside ml-4 mt-2 space-y-1 text-gray-400">
-                                <li><strong>Goal and action optimisation:</strong> Select the category that best fits your action (e.g., 'Submit lead form', 'Purchase').</li>
-                                <li><strong>Conversion name:</strong> Give it a clear name, like 'Contact Form Submission' or 'Ebook Download'.</li>
-                                <li><strong>Value:</strong> Assign a monetary value if applicable (essential for e-commerce), or select 'Don't use a value' for lead-gen.</li>
-                                <li><strong>Count:</strong> Choose <code class="bg-gray-600 text-xs p-1 rounded">'One'</code> for leads (to avoid counting one person filling out a form twice) and <code class="bg-gray-600 text-xs p-1 rounded">'Every'</code> for purchases.</li>
-                            </ul>
-                        </li>
-                        <li><strong>Set Up the Tag:</strong> After creating the action, Google will provide a code snippet (tag). This needs to be installed on your website. The easiest way is using <code class="bg-gray-600 text-xs p-1 rounded">'Google Tag Manager'</code>, but you can also install it directly on the code of your 'thank you' or confirmation page.</li>
-                        <li><strong>Verify:</strong> Once the tag is installed, check the Conversions page in Google Ads. The status should change from 'Unverified' to 'Recording conversions' within a few hours of getting your first conversion.</li>
-                    </ol>
-                </div>
-            </div>
         </div>
     </template>
 
@@ -648,17 +564,17 @@
                 document.getElementById('pin-strategy-btn')?.addEventListener('click', handlePinStrategy);
 
                 const tabs = document.querySelectorAll('#strategy-guide .tab-button');
-                 tabs.forEach(tab => {
-                     tab.addEventListener('click', () => {
-                         const targetTab = tab.dataset.tab;
-                         tabs.forEach(t => t.classList.remove('active'));
-                         tab.classList.add('active');
-                         const pitchSections = document.querySelectorAll('#strategy-guide .pitch-section');
-                         pitchSections.forEach(section => section.classList.remove('active'));
-                         const targetSection = document.getElementById(`${targetTab}-content`);
-                         if(targetSection) targetSection.classList.add('active');
-                     });
-                 });
+                   tabs.forEach(tab => {
+                       tab.addEventListener('click', () => {
+                           const targetTab = tab.dataset.tab;
+                           tabs.forEach(t => t.classList.remove('active'));
+                           tab.classList.add('active');
+                           const pitchSections = document.querySelectorAll('#strategy-guide .pitch-section');
+                           pitchSections.forEach(section => section.classList.remove('active'));
+                           const targetSection = document.getElementById(`${targetTab}-content`);
+                           if(targetSection) targetSection.classList.add('active');
+                       });
+                   });
             }
 
             function handlePinStrategy() {
@@ -697,8 +613,8 @@
                     button.className = 'w-full text-left p-3 rounded-md bg-amber-900 bg-opacity-50 hover:bg-opacity-75 text-amber-300 font-semibold text-sm';
                     button.textContent = strategy.title;
                     button.onclick = () => {
-                         const funnelIndex = funnelOrder.indexOf(key);
-                         selectStrategy(key, funnelIndex);
+                           const funnelIndex = funnelOrder.indexOf(key);
+                           selectStrategy(key, funnelIndex);
                     };
                     pinnedListEl.appendChild(button);
                 });
@@ -706,13 +622,13 @@
 
             function bindSuggestionFormEvents() {
                 const suggestionForm = document.getElementById('suggestionForm');
-                 if (suggestionForm) {
-                     suggestionForm.addEventListener('submit', (e) => {
-                         e.preventDefault();
-                         alert('Thank you for your suggestion!');
-                         suggestionForm.reset();
-                     });
-                 }
+                   if (suggestionForm) {
+                       suggestionForm.addEventListener('submit', (e) => {
+                           e.preventDefault();
+                           alert('Thank you for your suggestion!');
+                           suggestionForm.reset();
+                       });
+                   }
             }
             
             function bindQuizEvents() {
@@ -805,10 +721,7 @@
                         verdictText.textContent = '7 CRORE!';
                         verdictText.className = 'text-5xl md:text-7xl font-black text-center animate-ping-once text-green-400';
                         
-                        const synth = new Tone.PolySynth(Tone.Synth).toDestination();
-                        const now = Tone.now();
-                        synth.triggerAttackRelease(["C4", "E4", "G4", "C5"], "0.5s", now);
-                        synth.triggerAttackRelease(["E5", "G5", "C6"], "0.4s", now + 0.5);
+                        document.getElementById('7-crore-audio').play();
 
                     } else {
                         verdictText.textContent = 'GALAT JAWAAB';
@@ -861,7 +774,7 @@
                 </div>
             `;
 
-             const budgetContent = `
+            const budgetContent = `
                 <div>
                     <h3 class="text-2xl font-bold text-white mb-2">Pitching Budget Adjustments: Address the Situation</h3>
                     <p class="text-gray-400 mb-6">A budget conversation is often sensitive. Frame it around opportunity and removing limitations, not just spending more money. Use the account's data to justify the recommendation.</p>
@@ -885,13 +798,13 @@
             const closingContent = `
                 <div class="space-y-4 text-lg text-gray-300">
                     <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
-                         <h4 class="font-bold text-white mb-2">Pitch Success Tracking</h4>
-                         <p class="mb-2 text-sm text-gray-400">Log the outcome of this pitch for team analytics.</p>
-                         <div class="flex space-x-2">
-                             <button id="pitch-accepted-btn" class="flex-1 text-center py-2 px-3 text-sm font-medium rounded-md bg-green-900 bg-opacity-50 text-green-300 hover:bg-green-800 transition-colors">Accepted</button>
-                             <button id="pitch-rejected-btn" class="flex-1 text-center py-2 px-3 text-sm font-medium rounded-md bg-red-900 bg-opacity-50 text-red-300 hover:bg-red-800 transition-colors">Rejected</button>
-                             <button id="pitch-followup-btn" class="flex-1 text-center py-2 px-3 text-sm font-medium rounded-md bg-amber-900 bg-opacity-50 text-amber-300 hover:bg-amber-800 transition-colors">Needs Follow-up</button>
-                         </div>
+                            <h4 class="font-bold text-white mb-2">Pitch Success Tracking</h4>
+                            <p class="mb-2 text-sm text-gray-400">Log the outcome of this pitch for team analytics.</p>
+                            <div class="flex space-x-2">
+                                   <button id="pitch-accepted-btn" class="flex-1 text-center py-2 px-3 text-sm font-medium rounded-md bg-green-900 bg-opacity-50 text-green-300 hover:bg-green-800 transition-colors">Accepted</button>
+                                   <button id="pitch-rejected-btn" class="flex-1 text-center py-2 px-3 text-sm font-medium rounded-md bg-red-900 bg-opacity-50 text-red-300 hover:bg-red-800 transition-colors">Rejected</button>
+                                   <button id="pitch-followup-btn" class="flex-1 text-center py-2 px-3 text-sm font-medium rounded-md bg-amber-900 bg-opacity-50 text-amber-300 hover:bg-amber-800 transition-colors">Needs Follow-up</button>
+                            </div>
                     </div>
                     <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
                         <h4 class="font-bold text-white">Summarize</h4>
@@ -976,7 +889,7 @@
                     implementation: `<ol class="list-decimal list-inside space-y-2 text-gray-400"><li>Navigate to <strong>Campaigns</strong> > Select campaign.</li><li>Go to <strong>Settings</strong> > <strong>Bidding</strong>.</li><li>Click <strong>'Change bid strategy'</strong> > Select <strong>'Target ROAS'</strong>.</li><li>Enter target percentage (e.g., <strong>500%</strong> for 5x return).</li><li>Click <strong>'Save'</strong>.</li></ol>`,
                     monitoring: `<h3 class="text-2xl font-bold text-white mb-4">Metrics to Monitor</h3><p class="text-gray-400 mb-6">The goal is achieving a stable Return On Ad Spend. Monitor these metrics after the learning period.</p><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"><div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg"><h4 class="font-semibold text-white">Primary: Conv. Value / Cost</h4><p class="text-gray-300">Return On Ad Spend (ROAS)</p><p class="text-sm text-gray-500">This is the key metric and should average out to your target percentage.</p></div><div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg"><h4 class="font-semibold text-white">Secondary: Conv. Value</h4><p class="text-gray-300">Total Conversion Value</p><p class="text-sm text-gray-500">Keep an eye on total revenue to ensure profitability doesn't come at too great a cost to volume.</p></div><div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg"><h4 class="font-semibold text-white">Health: Search Lost IS (Rank)</h4><p class="text-gray-300">Impression Share lost to Ad Rank</p><p class="text-sm text-gray-500">If high, your ROAS target might be too aggressive, limiting visibility.</p></div></div>`
                 },
-                 tIS: {
+                tIS: {
                     title: "Target Impression Share",
                     subtitle: "Pitch for Brand Defense and Market Dominance",
                     saleHook: "I was reviewing how your brand appears against competitors and saw an opportunity to ensure you are consistently the most visible business for your most important search terms.",
@@ -1094,57 +1007,55 @@
             
             function generateDynamicCallFlow(strategyData){
                 const openings = [
-                     `"Hello, my name is [Your Name]. Am I speaking with [Advertiser Name]? Glad I caught you at a good time!"`,
-                     `"Hi [Advertiser Name], this is [Your Name] calling from the Google Ads team. Is now a good time to talk for a few minutes?"`
+                       `"Hello, my name is [Your Name]. Am I speaking with [Advertiser Name]? Glad I caught you at a good time!"`,
+                       `"Hi [Advertiser Name], this is [Your Name] calling from the Google Ads team. Is now a good time to talk for a few minutes?"`
                 ];
-                 const tenures = [
-                     `"I'm the dedicated accounts manager for your ads account for the entire quarter."`,
-                     `"I'll be your strategic partner from the Google Ads team for the next three months, focused on helping you grow."`
+                   const tenures = [
+                       `"I'm the dedicated accounts manager for your ads account for the entire quarter."`,
+                       `"I'll be your strategic partner from the Google Ads team for the next three months, focused on helping you grow."`
                 ];
-                 const hooks = [
-                     strategyData.saleHook,
-                     `"I was analyzing your account's performance and pinpointed a key area I believe we can significantly improve. It relates directly to how we can achieve your goal of [Client Goal]."`,
-                     `"While reviewing your recent campaign data, a specific trend stood out to me. I have a strategy in mind that could capitalize on this to boost your results."`
+                   const hooks = [
+                       strategyData.saleHook,
+                       `"I was analyzing your account's performance and pinpointed a key area I believe we can significantly improve. It relates directly to how we can achieve your goal of [Client Goal]."`,
+                       `"While reviewing your recent campaign data, a specific trend stood out to me. I have a strategy in mind that could capitalize on this to boost your results."`
                 ];
-                 const transitions = [
-                     strategyData.transition,
-                     `"Based on our discussion about the importance of [Client's Key Goal], it's clear the next step is to align our strategy to achieve that. Let's start by looking at your conversion tracking."`,
-                     `"You've mentioned that [Client's Pain Point] is a key challenge. To address that directly, we need to first ensure we're measuring success correctly. Let's move to the 'Conv. Tracking' tab."`
+                   const transitions = [
+                       strategyData.transition,
+                       `"Based on our discussion about the importance of [Client's Key Goal], it's clear the next step is to align our strategy to achieve that. Let's start by looking at your conversion tracking."`,
+                       `"You've mentioned that [Client's Pain Point] is a key challenge. To address that directly, we need to first ensure we're measuring success correctly. Let's move to the 'Conv. Tracking' tab."`
                 ];
                 
                 const randomItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
                 return `
-                     <div class="space-y-4 text-lg text-gray-300">
-                         <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
-                             <h4 class="font-bold text-white">Call Opening & Tenure</h4>
-                             <p>${randomItem(openings)} ${randomItem(tenures)}</p>
-                         </div>
-                         <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
-                             <h4 class="font-bold text-white">Sale Hook</h4>
-                             <p>${randomItem(hooks)}</p>
-                         </div>
-                          <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
-                             <h4 class="font-bold text-white">Disclaimer & Verification</h4>
-                             <p>"Before we proceed, I would like to let you know that - This call may be recorded for training, quality and to improve Google’s services. Do you agree to have this call monitored or recorded? (Wait for 'Yes') Thank you. I’d like to inform you that the recording has started. Can you please log in to the account and verify the last 4 digits of your Customer ID?"</p>
-                         </div>
-                         <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
-                             <h4 class="font-bold text-white">PBC+Agenda</h4>
-                             <p>"On today’s call, I’ll ask a few questions to get a better understanding of your business. This will help me share relevant optimization tips that could support your growth. Sound good?"</p>
-                         </div>
-                          <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
-                             <h4 class="font-bold text-white">Transition to Next Step</h4>
-                             <p>${randomItem(transitions)}</p>
-                         </div>
-                     </div>
-                 `;
+                       <div class="space-y-4 text-lg text-gray-300">
+                           <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
+                               <h4 class="font-bold text-white">Call Opening & Tenure</h4>
+                               <p>${randomItem(openings)} ${randomItem(tenures)}</p>
+                           </div>
+                           <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
+                               <h4 class="font-bold text-white">Sale Hook</h4>
+                               <p>${randomItem(hooks)}</p>
+                           </div>
+                            <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
+                               <h4 class="font-bold text-white">Disclaimer & Verification</h4>
+                               <p>"Before we proceed, I would like to let you know that - This call may be recorded for training, quality and to improve Google’s services. Do you agree to have this call monitored or recorded? (Wait for 'Yes') Thank you. I’d like to inform you that the recording has started. Can you please log in to the account and verify the last 4 digits of your Customer ID?"</p>
+                           </div>
+                           <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
+                               <h4 class="font-bold text-white">PBC+Agenda</h4>
+                               <p>"On today’s call, I’ll ask a few questions to get a better understanding of your business. This will help me share relevant optimization tips that could support your growth. Sound good?"</p>
+                           </div>
+                            <div class="p-4 bg-gray-700 bg-opacity-40 rounded-lg">
+                               <h4 class="font-bold text-white">Transition to Next Step</h4>
+                               <p>${randomItem(transitions)}</p>
+                           </div>
+                       </div>
+                    `;
             }
 
             // Initial Load
-             showAppPage('toolPage');
+               showAppPage('toolPage');
         });
     </script>
 </body>
 </html>
-```
-
